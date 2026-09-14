@@ -1,21 +1,26 @@
 J'ai voulu faire une architecture facilement adaptable à différents contextes de votes pour classer ou choisir des entités.
 Les modalités de vote, les candidats, et les votants sont paramétrables.
+Les ID sont en BIGINT pour pouvoir contenir les 13 chiffre du numero ISBN. Les autres ID en int pour eviter de trop gaspiller de mémoire.
+Seuls les id de links doivent rester en bigint
 
 Classe entity
 Elle permet de créer une entité. L'entité peut être un livre, un auteur, une personne, un éditeur, une société, un personnage de livre etc.
 C'est le champ type qui explicite le type d'entité dont il s'agit.
 Une entité n'a qu'un jury mais peut avoir plusieurs élections.
+Au cas ou les entités soient liées fk_id_entity_mother permettra la recursivité.
 
 Classe jury
 Elle a pour but d'enregistrer la composition du groupe des votants à un moment donné.
 On peut ainsi facilement changer la composition du jury, à tous moment, sans perdre les informations de ses compositions précédentes.
 Un jury est composé de plusieurs entités. 
+Au cas ou les jury soient liées fk_id_election_mother permettra la recursivité.
 
-Classe links
-Elle enregistre la hiérarchie qui lie les entités. le but est de permettre la récursivité.
-Cela peut être utile pour de nombreuses fonctionnalité comme de l'affichage ou pour attribuer des permissions ou fonctionnalités selon la place de l'entité concernée dans la hiérarchie.
-Elle permet aussi de noter la liste des candidats à une élection (id de l'élection comme mère, et id de l'entité comme fille).
-Elle permet aussi de noter la composition d'un jury (id du jury comme mère, et id de l'entité qui le compose comme fille).
+Classe entity_jury
+Elle permet aussi de noter la composition d'un jury.
+
+Classe entity_election
+Elle permet aussi de noter la liste des candidats à une élection.
+Au cas ou les elections soient liées fk_id_jury_mother permettra la recursivité.
 
 Classe ballot
 Permet d'enregistrer qui vote d'une entité pour une autre entité à une date et pour une élection.
@@ -26,6 +31,7 @@ Elle permet de retrouver le nom du scrutin, la composition du jury, le nombre de
 l'identifiant du gagnant s'il y en a un.
 Si c'est une phase finale. La variable modality doit indiquer la conséquence du vote pour le panel de candidats (division de moitié du panel, du tiers etc)
 Cette classe permet de changer les modes d'election tout en gardant en mémoire les conditions des votes precedents.
+Une élection a ses caractéristiques propres et a un seul jury.
 
 
 
