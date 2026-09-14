@@ -100,8 +100,8 @@
         <mxCell id="wn10JEPL9fmL2zif_RXL-57" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;autosize=1;resizable=0;" value="links" vertex="1">
           <mxGeometry height="30" width="50" x="335" y="130" as="geometry" />
         </mxCell>
-        <mxCell id="wn10JEPL9fmL2zif_RXL-58" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;autosize=1;resizable=0;" value="&lt;div&gt;id_link&lt;/div&gt;fk_mother_id&lt;div&gt;&lt;div&gt;fk_child&lt;/div&gt;&lt;/div&gt;" vertex="1">
-          <mxGeometry height="60" width="90" x="315" y="175" as="geometry" />
+        <mxCell id="wn10JEPL9fmL2zif_RXL-58" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;autosize=1;resizable=0;" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;fk_id_mother&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;fk_id_child&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="40" width="90" x="315" y="185" as="geometry" />
         </mxCell>
         <mxCell id="wn10JEPL9fmL2zif_RXL-59" edge="1" parent="1" source="Tzq93jsvwsO7AdK0wVH6-21" style="endArrow=none;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.007;entryY=0.568;entryDx=0;entryDy=0;entryPerimeter=0;" target="wn10JEPL9fmL2zif_RXL-55" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
