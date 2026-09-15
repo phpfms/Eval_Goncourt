@@ -12,7 +12,7 @@ def main() -> None:
     """Programme principal."""
     print("""\
 --------------------------
-Bienvenue dans notre école
+Bienvenue dans notre prix Goncourt
 --------------------------""")
 
     app = Application()

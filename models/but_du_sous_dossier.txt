@@ -1,0 +1,2 @@
+
+permet de gerer les constructeurs et sur definition des classes de base

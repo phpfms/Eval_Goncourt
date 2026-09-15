@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost
--- Généré le : mar. 15 sep. 2026 à 09:39
+-- Généré le : mar. 15 sep. 2026 à 14:42
 -- Version du serveur : 11.7.1-MariaDB
 -- Version de PHP : 8.5.4
 
@@ -120,7 +120,8 @@ CREATE TABLE `identity` (
 
 CREATE TABLE `identity_entity` (
   `fk_id_entity` bigint(20) NOT NULL,
-  `fk_id_identity` bigint(20) UNSIGNED NOT NULL
+  `fk_id_identity` bigint(20) UNSIGNED NOT NULL,
+  `role_id_identity` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- --------------------------------------------------------
@@ -195,7 +196,7 @@ ALTER TABLE `identity`
 -- Index pour la table `identity_entity`
 --
 ALTER TABLE `identity_entity`
-  ADD PRIMARY KEY (`fk_id_entity`,`fk_id_identity`),
+  ADD PRIMARY KEY (`fk_id_entity`,`fk_id_identity`,`role_id_identity`),
   ADD KEY `idx_identity_entity_identity` (`fk_id_identity`);
 
 --

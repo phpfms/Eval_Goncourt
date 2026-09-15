@@ -175,10 +175,10 @@
         <mxCell id="wn10JEPL9fmL2zif_RXL-121" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;autosize=1;resizable=0;" value="Identity_entity" vertex="1">
           <mxGeometry height="30" width="100" x="-170" y="175" as="geometry" />
         </mxCell>
-        <mxCell id="wn10JEPL9fmL2zif_RXL-122" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;autosize=1;resizable=0;" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;fk_id_entity&lt;/span&gt;&lt;/div&gt;&lt;div&gt;fk_id_identity&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;/span&gt;&lt;/div&gt;" vertex="1">
-          <mxGeometry height="40" width="90" x="-165" y="230" as="geometry" />
+        <mxCell id="wn10JEPL9fmL2zif_RXL-122" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;autosize=1;resizable=0;" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;fk_id_entity&lt;/span&gt;&lt;/div&gt;&lt;div&gt;fk_id_identity&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;rôle&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="90" x="-165" y="220" as="geometry" />
         </mxCell>
-        <mxCell id="wn10JEPL9fmL2zif_RXL-124" edge="1" parent="1" source="wn10JEPL9fmL2zif_RXL-119" style="endArrow=block;html=1;rounded=0;entryX=0.547;entryY=0.06;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryPerimeter=0;endFill=0;" target="wn10JEPL9fmL2zif_RXL-115" value="">
+        <mxCell id="wn10JEPL9fmL2zif_RXL-124" edge="1" parent="1" source="wn10JEPL9fmL2zif_RXL-119" style="endArrow=none;html=1;rounded=0;entryX=0.547;entryY=0.06;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryPerimeter=0;endFill=0;" target="wn10JEPL9fmL2zif_RXL-115" value="">
           <mxGeometry height="50" relative="1" width="50" as="geometry">
             <mxPoint x="-140" y="165" as="sourcePoint" />
             <mxPoint x="-139" y="80" as="targetPoint" />
