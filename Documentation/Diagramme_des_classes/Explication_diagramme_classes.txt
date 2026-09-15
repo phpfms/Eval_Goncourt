@@ -1,0 +1,42 @@
+J'ai voulu faire une architecture facilement adaptable à différents contextes de votes pour classer ou choisir des entités.
+Cette organisation des classes est très générique car le but de l'application est de voter et sélectionner. Il n'est pas d'attribuer beaucoup de fonctionnalités différentes à des gens selon leur caractéristiques, ce qui aurait demandé une architecture POO plus précise et plus de tables
+Les informations demandées pour permettre ultérieurement d'attribuer des comptes différents aux utilisateurs simples, au président du jury, aux membres du jury, et au lauréat sont contenus dans les tables.
+Les modalités de vote, les candidats, et les votants sont paramétrables.
+Les ID sont en BIGINT pour pouvoir contenir les 13 chiffre du numéro ISBN. Les autres ID en int pour éviter de trop gaspiller de mémoire.
+Seuls les id de links doivent rester en bigint.
+
+Classe Identity
+Classe mère de Entity. Elle peut être un auteur un éditeur un société etc. Son but est notamment de permettre d'afficher une biographie de l'auteur dans la description.
+Au cas ou les Identity soient liées fk_id_identity_mother permettra la récursivité.
+
+Classe Entity
+Elle permet de créer une entité et hérite de Identity. L'entité peut être un livre, un éditeur, une société, un personnage de livre ou autre qui hérite de Identity, ou simplement complète les infos contenues dans Identity.
+C'est le champ type qui explicite le type d'entité dont il s'agit.
+Au cas ou les entités soient liées fk_id_entity_mother permettra la récursivité.
+
+Classe Jury
+Elle a pour but d'enregistrer la composition du groupe des votants à un moment donné.
+On peut ainsi facilement changer la composition du jury, à tous moment, sans perdre les informations de ses compositions précédentes.
+Un jury est composé de plusieurs entités. 
+Au cas ou les jury soient liées fk_id_election_mother permettra la récursivité.
+
+Classe Entity_jury
+Elle permet aussi de noter la composition d'un jury.
+Au cas ou les élections soient liées fk_id_jury_mother permettra la récursivité.
+
+Classe Entity_election
+Elle permet aussi de noter la liste des candidats à une élection.
+
+Classe Ballot
+Permet d'enregistrer qui vote d'une entité pour une autre entité à une date et pour une élection.
+
+Classe Election
+Elle permet de détailler tout ce qui concerne l'élection, par exemple le tour de vote concerné, si le but est de diviser de moitié le nombre de candidats ou autre.
+Elle permet de retrouver le nom du scrutin, la composition du jury, le nombre de candidats, sa date, le degrés est le énième tour de vote, si elle est terminée ou pas,
+l'identifiant du gagnant s'il y en a un.
+Si c'est une phase finale. La variable modality doit indiquer la conséquence du vote pour le panel de candidats (division de moitié du panel, du tiers etc)
+Cette classe permet de changer les modes d'élection tout en gardant en mémoire les conditions des votes précédents.
+Une élection a ses caractéristiques propres et a un seul jury.
+
+
+
