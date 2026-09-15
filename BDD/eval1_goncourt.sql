@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost
--- Généré le : lun. 14 sep. 2026 à 15:36
+-- Généré le : mar. 15 sep. 2026 à 09:39
 -- Version du serveur : 11.7.1-MariaDB
 -- Version de PHP : 8.5.4
 
@@ -24,11 +24,25 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `ballot`
+--
+
+CREATE TABLE `ballot` (
+  `id_ballot` bigint(20) NOT NULL,
+  `fk_id_election` smallint(5) UNSIGNED NOT NULL,
+  `date_ballot` date NOT NULL,
+  `fk_id_entity_who_choose` bigint(20) NOT NULL,
+  `fk_id_entity_chosen` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `election`
 --
 
 CREATE TABLE `election` (
-  `id_election` smallint(6) NOT NULL,
+  `id_election` smallint(5) UNSIGNED NOT NULL,
   `fk_id_jury` int(11) NOT NULL,
   `nb_candidates` smallint(6) NOT NULL,
   `name_election` varchar(80) NOT NULL,
@@ -38,7 +52,7 @@ CREATE TABLE `election` (
   `fk_id_winner` bigint(20) DEFAULT NULL,
   `final` tinyint(1) NOT NULL,
   `modality` varchar(50) DEFAULT NULL,
-  `fk_id_election_mother` int(11) NOT NULL
+  `fk_id_election_mother` smallint(5) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- --------------------------------------------------------
@@ -58,7 +72,55 @@ CREATE TABLE `entity` (
   `creation_date` date NOT NULL,
   `nb` decimal(15,2) NOT NULL,
   `unit_nb` varchar(10) NOT NULL,
-  `fk_id_entity_mother` bigint(20) NOT NULL
+  `fk_id_entity_mother` bigint(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `entity_election`
+--
+
+CREATE TABLE `entity_election` (
+  `fk_id_entity` bigint(20) NOT NULL,
+  `fk_id_election` smallint(5) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `entity_jury`
+--
+
+CREATE TABLE `entity_jury` (
+  `fk_id_jury` int(11) NOT NULL,
+  `fk_id_entity` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `identity`
+--
+
+CREATE TABLE `identity` (
+  `id_identity` bigint(20) UNSIGNED NOT NULL,
+  `appelation` varchar(100) NOT NULL,
+  `under_appelation` varchar(80) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `address` varchar(100) DEFAULT NULL,
+  `fk_id_identity_mother` bigint(20) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `identity_entity`
+--
+
+CREATE TABLE `identity_entity` (
+  `fk_id_entity` bigint(20) NOT NULL,
+  `fk_id_identity` bigint(20) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- --------------------------------------------------------
@@ -73,7 +135,7 @@ CREATE TABLE `jury` (
   `date_end` date DEFAULT NULL,
   `fk_id_entity_president` bigint(20) DEFAULT NULL,
   `nb_entity` smallint(6) NOT NULL,
-  `fk_id_jury_mother` int(11) NOT NULL
+  `fk_id_jury_mother` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 --
@@ -81,26 +143,128 @@ CREATE TABLE `jury` (
 --
 
 --
+-- Index pour la table `ballot`
+--
+ALTER TABLE `ballot`
+  ADD PRIMARY KEY (`id_ballot`),
+  ADD UNIQUE KEY `uk_ballot_election_voter` (`fk_id_election`,`fk_id_entity_who_choose`),
+  ADD KEY `fk_ballot_election` (`fk_id_election`),
+  ADD KEY `fk_ballot_entity_who_choose` (`fk_id_entity_who_choose`),
+  ADD KEY `fk_ballot_entity_chosen` (`fk_id_entity_chosen`);
+
+--
 -- Index pour la table `election`
 --
 ALTER TABLE `election`
-  ADD PRIMARY KEY (`id_election`);
+  ADD PRIMARY KEY (`id_election`),
+  ADD KEY `fk_election_mother` (`fk_id_election_mother`),
+  ADD KEY `fk_election_jury` (`fk_id_jury`),
+  ADD KEY `fk_election_winner` (`fk_id_winner`);
 
 --
 -- Index pour la table `entity`
 --
 ALTER TABLE `entity`
   ADD PRIMARY KEY (`id_entity`),
-  ADD UNIQUE KEY `type` (`type`),
-  ADD UNIQUE KEY `unit_nb` (`unit_nb`),
-  ADD UNIQUE KEY `name` (`name`),
-  ADD UNIQUE KEY `ISBN` (`ISBN`);
+  ADD UNIQUE KEY `ISBN` (`ISBN`),
+  ADD KEY `fk_entity_mother` (`fk_id_entity_mother`),
+  ADD KEY `idx_entity_name` (`name`);
+
+--
+-- Index pour la table `entity_election`
+--
+ALTER TABLE `entity_election`
+  ADD PRIMARY KEY (`fk_id_entity`,`fk_id_election`),
+  ADD KEY `idx_entity_election_election` (`fk_id_election`);
+
+--
+-- Index pour la table `entity_jury`
+--
+ALTER TABLE `entity_jury`
+  ADD PRIMARY KEY (`fk_id_jury`,`fk_id_entity`),
+  ADD KEY `idx_entity_jury_entity` (`fk_id_entity`);
+
+--
+-- Index pour la table `identity`
+--
+ALTER TABLE `identity`
+  ADD PRIMARY KEY (`id_identity`),
+  ADD KEY `fk_identity_mother` (`fk_id_identity_mother`);
+
+--
+-- Index pour la table `identity_entity`
+--
+ALTER TABLE `identity_entity`
+  ADD PRIMARY KEY (`fk_id_entity`,`fk_id_identity`),
+  ADD KEY `idx_identity_entity_identity` (`fk_id_identity`);
 
 --
 -- Index pour la table `jury`
 --
 ALTER TABLE `jury`
-  ADD PRIMARY KEY (`id_jury`);
+  ADD PRIMARY KEY (`id_jury`),
+  ADD KEY `fk_jury_mother` (`fk_id_jury_mother`),
+  ADD KEY `fk_jury_president` (`fk_id_entity_president`);
+
+--
+-- Contraintes pour les tables déchargées
+--
+
+--
+-- Contraintes pour la table `ballot`
+--
+ALTER TABLE `ballot`
+  ADD CONSTRAINT `fk_ballot_election` FOREIGN KEY (`fk_id_election`) REFERENCES `election` (`id_election`),
+  ADD CONSTRAINT `fk_ballot_entity_chosen` FOREIGN KEY (`fk_id_entity_chosen`) REFERENCES `entity` (`id_entity`),
+  ADD CONSTRAINT `fk_ballot_entity_who_choose` FOREIGN KEY (`fk_id_entity_who_choose`) REFERENCES `entity` (`id_entity`);
+
+--
+-- Contraintes pour la table `election`
+--
+ALTER TABLE `election`
+  ADD CONSTRAINT `fk_election_jury` FOREIGN KEY (`fk_id_jury`) REFERENCES `jury` (`id_jury`),
+  ADD CONSTRAINT `fk_election_mother` FOREIGN KEY (`fk_id_election_mother`) REFERENCES `election` (`id_election`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_election_winner` FOREIGN KEY (`fk_id_winner`) REFERENCES `entity` (`id_entity`) ON DELETE SET NULL;
+
+--
+-- Contraintes pour la table `entity`
+--
+ALTER TABLE `entity`
+  ADD CONSTRAINT `fk_entity_mother` FOREIGN KEY (`fk_id_entity_mother`) REFERENCES `entity` (`id_entity`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Contraintes pour la table `entity_election`
+--
+ALTER TABLE `entity_election`
+  ADD CONSTRAINT `fk_entity_election_election` FOREIGN KEY (`fk_id_election`) REFERENCES `election` (`id_election`),
+  ADD CONSTRAINT `fk_entity_election_entity` FOREIGN KEY (`fk_id_entity`) REFERENCES `entity` (`id_entity`);
+
+--
+-- Contraintes pour la table `entity_jury`
+--
+ALTER TABLE `entity_jury`
+  ADD CONSTRAINT `fk_entity_jury_entity` FOREIGN KEY (`fk_id_entity`) REFERENCES `entity` (`id_entity`),
+  ADD CONSTRAINT `fk_entity_jury_jury` FOREIGN KEY (`fk_id_jury`) REFERENCES `jury` (`id_jury`);
+
+--
+-- Contraintes pour la table `identity`
+--
+ALTER TABLE `identity`
+  ADD CONSTRAINT `fk_identity_mother` FOREIGN KEY (`fk_id_identity_mother`) REFERENCES `identity` (`id_identity`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Contraintes pour la table `identity_entity`
+--
+ALTER TABLE `identity_entity`
+  ADD CONSTRAINT `fk_identity_entity_entity` FOREIGN KEY (`fk_id_entity`) REFERENCES `entity` (`id_entity`),
+  ADD CONSTRAINT `fk_identity_entity_identity` FOREIGN KEY (`fk_id_identity`) REFERENCES `identity` (`id_identity`);
+
+--
+-- Contraintes pour la table `jury`
+--
+ALTER TABLE `jury`
+  ADD CONSTRAINT `fk_jury_mother` FOREIGN KEY (`fk_id_jury_mother`) REFERENCES `jury` (`id_jury`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_jury_president` FOREIGN KEY (`fk_id_entity_president`) REFERENCES `entity` (`id_entity`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
