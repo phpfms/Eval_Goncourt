@@ -3,10 +3,12 @@ Les modalités de vote, les candidats, et les votants sont paramétrables.
 Les ID sont en BIGINT pour pouvoir contenir les 13 chiffre du numero ISBN. Les autres ID en int pour eviter de trop gaspiller de mémoire.
 Seuls les id de links doivent rester en bigint
 
+Classe Identity
+Classe mère de entity. Son but est de permettre d'afficher une biographie de l'auteur dans la description
+
 Classe entity
-Elle permet de créer une entité. L'entité peut être un livre, un auteur, une personne, un éditeur, une société, un personnage de livre etc.
+Elle permet de créer une entité et herite de identity. L'entité peut être un livre, un auteur, une personne, un éditeur, une société, un personnage de livre etc.
 C'est le champ type qui explicite le type d'entité dont il s'agit.
-Une entité n'a qu'un jury mais peut avoir plusieurs élections.
 Au cas ou les entités soient liées fk_id_entity_mother permettra la recursivité.
 
 Classe jury
