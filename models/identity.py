@@ -13,12 +13,11 @@ class Identity:
     """
     Représente une identité : personne ou organisation.
     """
-
     appelation: str
-    under_appelation: Optional[str]
-    description: Optional[str]
-    address: Optional[str]
-    fk_id_identity_mother: Optional[int]
+    under_appelation: Optional[str] = None
+    description: Optional[str] = None
+    address: Optional[str] = None
+    fk_id_identity_mother: Optional[int] = None
 
     id_identity: Optional[int] = field(default=None, init=False)
 

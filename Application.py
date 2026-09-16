@@ -4,16 +4,24 @@
 from business.data_loader import DataLoader
 from menu import Menu
 
+from business.identity_business import IdentityBusiness
+from daos.identity_dao import IdentityDao
+from models.identity import Identity
+
+from displays.identity_display import DisplayIdentity
+
 
 class Application:
 
     def __init__(self):
         """Initialise l'application."""
         self.menu = Menu()
+        self.identity_business = IdentityBusiness( IdentityDao() )
+        self.identity_display = DisplayIdentity()
 
     def run(self):
         """Lance l'application et charge les données dans la BDD si la ligne est décommentée."""
-        DataLoader().load()
+        #DataLoader().load()
 
         conti = True
 
@@ -216,25 +224,123 @@ class Application:
             choix = self.menu.display_person_menu()
 
             if choix == "1":
-                print("Afficher la liste des personnes, avec id, nom et rôle")
+                identities = self.identity_business.read_all()
+                self.identity_display.display_identities(identities)
+
 
             elif choix == "2":
-                print("Afficher tous les détails d'une personne")
+                try:
+                    id_identity = int(  input("Identifiant de l'identité : ") )
+                    identity = self.identity_business.read(id_identity)
+                    if identity is not None:
+                        self.identity_display.display_identity(identity)
+                    else:
+                        print("Identité introuvable.")
+                except ValueError:
+                    print("L'identifiant doit être un nombre.")
+
+
 
             elif choix == "3":
-                print("Trouver une personne par id")
+                try:
+                    id_identity = int( input("Identifiant de l'identité : ") )
+                    identity = self.identity_business.read(id_identity)
+                    if identity is not None:
+                        self.identity_display.display_identity(identity)
+                    else:
+                        print("Identité introuvable.")
+                except ValueError:
+                    print("L'identifiant doit être un nombre.")
+
+
 
             elif choix == "4":
-                print("Trouver une personne par nom")
+                name = input("Nom de la personne : ")
+                identities = self.identity_business.find_by_name(name)
+                if identities:
+                    for identity in identities:
+                        self.identity_display.display_identity(identity)
+                else:
+                    print("Aucune identité trouvée.")
+
 
             elif choix == "5":
-                print("Créer une personne")
+                print("\n===== CRÉER UNE IDENTITÉ =====")
+                appelation = input("Appellation : ")
+                under_appelation = input("Sous-appellation : ")
+                description = input("Description : ")
+                address = input("Adresse : ")
+
+                identity = Identity(
+                    appelation,
+                    under_appelation,
+                    description,
+                    address,
+                    None
+                )
+                id_identity = self.identity_business.create(identity)
+                if id_identity != 0:
+                    print( f"Identité créée avec l'identifiant {id_identity}." )
+
 
             elif choix == "6":
-                print("Modifier une personne")
+                try:
+                    id_identity = int( input("Identifiant de l'identité à modifier : ") )
+                    identity = self.identity_business.read(id_identity)
+                    if identity is None:
+                        print("Identité introuvable.")
+
+                    print("\n===== MODIFIER UNE IDENTITÉ =====")
+                    print("Laissez vide pour conserver la valeur actuelle.")
+
+                    appelation = input( f"Appellation [{identity.appelation}] : " )
+                    under_appelation = input( f"Sous-appellation [{identity.under_appelation}] : ")
+
+                    description = input( f"Description [{identity.description}] : " )
+                    address = input( f"Adresse [{identity.address}] : " )
+
+                    if appelation != "":
+                        identity.appelation = appelation
+                    if under_appelation != "":
+                        identity.under_appelation = under_appelation
+                    if description != "":
+                        identity.description = description
+                    if address != "":
+                        identity.address = address
+
+                    if self.identity_business.update(identity):
+                        print("Identité modifiée avec succès.")
+                    else:
+                        print("La modification a échoué.")
+                except ValueError:
+                    print("L'identifiant doit être un nombre.")
+
+
 
             elif choix == "7":
-                print("Supprimer une personne")
+                try:
+                    id_identity = int(
+                        input("Identifiant de l'identité à supprimer : ")
+                    )
+                    identity = self.identity_business.read(id_identity)
+                    if identity is None:
+                        print("Identité introuvable.")
+                    else:
+                        self.identity_display.display_identity(identity)
+                        confirmation = input(
+                            "Voulez-vous vraiment supprimer cette identité ? (o/n) : "
+                        )
+
+                        if confirmation.lower() == "o":
+                            if self.identity_business.delete(id_identity):
+                                print("Identité supprimée avec succès.")
+                            else:
+                                print("La suppression a échoué.")
+                        else:
+                            print("Suppression annulée.")
+                except ValueError:
+
+                    print("L'identifiant doit être un nombre.")
 
             elif choix == "0":
                 print("Retour au menu principal.")
