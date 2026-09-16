@@ -67,12 +67,19 @@ class EntityDao(Dao[Entity]):
             print(f"Erreur lors de la création de l'entité : {error}")
             return 0
 
-    def read(self, id_entity: int) -> Optional[Entity]:
+    def read(self, *id_entity: int) -> Optional[Entity]:
+
         """
         Renvoie l'entité correspondant à l'identifiant fourni.
 
         Retourne None si l'entité n'existe pas.
         """
+
+        if len(id_entity) != 1:
+            return None
+
+        id_entity = id_entity[0]
+
         try:
             with Dao.connection.cursor() as cursor:
                 sql = """

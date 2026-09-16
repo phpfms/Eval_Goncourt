@@ -57,12 +57,18 @@ class IdentityDao(Dao[Identity]):
             print(f"Erreur lors de la création de l'identité : {error}")
             return 0
 
-    def read(self, id_identity: int) -> Optional[Identity]:
+    def read(self, *id_entity: int) -> Optional[Identity]:
         """
         Renvoie l'identité correspondant à l'identifiant fourni.
 
         Retourne None si l'identité n'existe pas.
         """
+
+        if len(id_entity) != 1:
+            return None
+
+        id_identity = id_entity[0]
+
         try:
             with Dao.connection.cursor() as cursor:
                 sql = """

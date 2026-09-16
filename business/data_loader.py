@@ -4,11 +4,13 @@ from models.identity import Identity
 from models.entity import Entity
 from models.identity_entity import IdentityEntity
 from models.role import Role
+from models.identity_role import IdentityRole
 
 from daos.role_dao import RoleDao
 from daos.identity_dao import IdentityDao
 from daos.entity_dao import EntityDao
 from daos.identity_entity_dao import IdentityEntityDao
+from daos.identity_role_dao import IdentityRoleDao
 
 
 class DataLoader:
@@ -31,6 +33,7 @@ class DataLoader:
         self.identity_dao = IdentityDao()
         self.entity_dao = EntityDao()
         self.identity_entity_dao = IdentityEntityDao()
+        self.identity_role_dao = IdentityRoleDao()
         self.role_dao = RoleDao()
 
     def load(self):
@@ -43,25 +46,29 @@ class DataLoader:
         # ==========================================================
 
         roles = [
-            Role(name_role="écrivain"),
-            Role(name_role="auteur"),
-            Role(name_role="journaliste"),
-            Role(name_role="scénariste"),
-            Role(name_role="romancier"),
-            Role(name_role="poète"),
-            Role(name_role="peintre"),
-            Role(name_role="president"),
-            Role(name_role="vice-president"),
             Role(name_role="ancien membre du conseil d'etat"),
-            Role(name_role="réalisateur"),
+            Role(name_role="auteur"),
             Role(name_role="dramaturge"),
-            Role(name_role="philosophe"),
-            Role(name_role="livre"),
-            Role(name_role="essayiste"),
             Role(name_role="éditeur"),
+            Role(name_role="essayiste"),
+            Role(name_role="écrivain"),
+            Role(name_role="journaliste"),
+            Role(name_role="livre"),
+            Role(name_role="membre du jury"),
+            Role(name_role="peintre"),
+            Role(name_role="personnage_principal"),
+            Role(name_role="philosophe"),
+            Role(name_role="poète"),
+            Role(name_role="président"),
+            Role(name_role="président du jury"),
+            Role(name_role="réalisateur"),
             Role(name_role="relieur"),
+            Role(name_role="romancier"),
+            Role(name_role="scénariste"),
+            Role(name_role="secrétaire général"),
             Role(name_role="traducteur"),
-            Role(name_role="personnage_principal")
+            Role(name_role="trésorier"),
+            Role(name_role="vice-président du jury")
         ]
 
         # Création des rôles en BDD
@@ -97,6 +104,90 @@ class DataLoader:
                 appelation="Prix Goncourt",
                 under_appelation=None,
                 description="Prix littéraire français créé en 1903 et décerné chaque année par l'Académie Goncourt.",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            # ==========================================================
+            # ACADÉMIE GONCOURT
+            # ==========================================================
+
+            Identity(
+                appelation="Decoin",
+                under_appelation="Didier",
+                description="Écrivain et scénariste. Entre à l’Académie Goncourt le 6 juin 1995, succédant à Jean Cayrol au 3ème couvert. Après en avoir été le Secrétaire général, il est Président de la Société littéraire du 20 janvier 2020 au 13 mai 2024.",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            Identity(
+                appelation="Chandernagor",
+                under_appelation="Françoise",
+                description="Écrivaine. Ancien membre du Conseil d'État. Entre à l’Académie Goncourt le 6 juin 1995, succédant à Emmanuel Roblès au 8ème couvert. Elle en est la Vice-Présidente.",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            Identity(
+                appelation="Ben Jelloun",
+                under_appelation="Tahar",
+                description="Écrivain, poète et peintre. Entre à l’Académie Goncourt le 6 mai 2008, succédant à François Nourissier au 6ème couvert.",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            Identity(
+                appelation="Constant",
+                under_appelation="Paule",
+                description="Écrivaine. Entre à l’Académie Goncourt le 8 janvier 2013, succédant à Robert Sabatier au 4ème couvert.",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            Identity(
+                appelation="Claudel",
+                under_appelation="Philippe",
+                description="Écrivain, réalisateur et dramaturge. Entre à l’Académie Goncourt le 11 janvier 2012, succédant à Jorge Semprun au 9ème couvert. Après en avoir été le Trésorier, puis Secrétaire général, il est élu Président de la Société littéraire le 13 mai 2024.",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            Identity(
+                appelation="Assouline",
+                under_appelation="Pierre",
+                description="Écrivain et journaliste. Entre à l’Académie Goncourt le 11 janvier 2012, succédant à Françoise Mallet-Joris au 10ème couvert.",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            Identity(
+                appelation="Schmitt",
+                under_appelation="Eric-Emmanuel",
+                description="Dramaturge, philosophe et écrivain. Entre à l’Académie Goncourt le 5 janvier 2016, succédant à Edmonde Charles-Roux au 2ème couvert. Élu trésorier le 6 mai 2025.",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            Identity(
+                appelation="Laurens",
+                under_appelation="Camille",
+                description="Écrivaine. Entre à l’Académie Goncourt le 11 février 2020, succédant à Virginie Despentes au 7ème couvert. Élue secrétaire générale le 13 mai 2024.",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            Identity(
+                appelation="Bruckner",
+                under_appelation="Pascal",
+                description="Romancier, philosophe et essayiste. Entre à l’Académie Goncourt le 11 février 2020, succédant à Bernard Pivot au 1er couvert.",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            Identity(
+                appelation="Angot",
+                under_appelation="Christine",
+                description="Écrivaine. Entre à l’Académie Goncourt le 28 février 2023, succédant à Patrick Rambaud au 5ème couvert.",
                 address=None,
                 fk_id_identity_mother=None
             ),
@@ -977,6 +1068,213 @@ class DataLoader:
         ]
 
         # ==========================================================
+        # 3.1. IDENTITY_ROLE
+        # ==========================================================
+
+        identity_roles = [
+
+            # ==========================================================
+            # DIDIER DECOIN
+            # ==========================================================
+
+            {
+                "identity_name": "Didier Decoin",
+                "role": "écrivain"
+            },
+            {
+                "identity_name": "Didier Decoin",
+                "role": "scénariste"
+            },
+            {
+                "identity_name": "Didier Decoin",
+                "role": "président"
+            },
+            {
+                "identity_name": "Didier Decoin",
+                "role": "président du jury"
+            },
+
+            # ==========================================================
+            # FRANÇOISE CHANDERNAGOR
+            # ==========================================================
+
+            {
+                "identity_name": "Françoise Chandernagor",
+                "role": "écrivain"
+            },
+            {
+                "identity_name": "Françoise Chandernagor",
+                "role": "vice-président du jury"
+            },
+            {
+                "identity_name": "Françoise Chandernagor",
+                "role": "ancien membre du conseil d'etat"
+            },
+
+            # ==========================================================
+            # TAHAR BEN JELLOUN
+            # ==========================================================
+
+            {
+                "identity_name": "Tahar Ben Jelloun",
+                "role": "écrivain"
+            },
+            {
+                "identity_name": "Tahar Ben Jelloun",
+                "role": "poète"
+            },
+            {
+                "identity_name": "Tahar Ben Jelloun",
+                "role": "peintre"
+            },
+            {
+                "identity_name": "Tahar Ben Jelloun",
+                "role": "membre du jury"
+            },
+
+            # ==========================================================
+            # PAULE CONSTANT
+            # ==========================================================
+
+            {
+                "identity_name": "Paule Constant",
+                "role": "écrivain"
+            },
+            {
+                "identity_name": "Paule Constant",
+                "role": "membre du jury"
+            },
+
+            # ==========================================================
+            # PHILIPPE CLAUDEL
+            # ==========================================================
+
+            {
+                "identity_name": "Philippe Claudel",
+                "role": "écrivain"
+            },
+            {
+                "identity_name": "Philippe Claudel",
+                "role": "réalisateur"
+            },
+            {
+                "identity_name": "Philippe Claudel",
+                "role": "dramaturge"
+            },
+            {
+                "identity_name": "Philippe Claudel",
+                "role": "président"
+            },
+            {
+                "identity_name": "Philippe Claudel",
+                "role": "trésorier"
+            },
+            {
+                "identity_name": "Philippe Claudel",
+                "role": "secrétaire général"
+            },
+            {
+                "identity_name": "Philippe Claudel",
+                "role": "membre du jury"
+            },
+
+            # ==========================================================
+            # PIERRE ASSOULINE
+            # ==========================================================
+
+            {
+                "identity_name": "Pierre Assouline",
+                "role": "écrivain"
+            },
+            {
+                "identity_name": "Pierre Assouline",
+                "role": "journaliste"
+            },
+            {
+                "identity_name": "Pierre Assouline",
+                "role": "membre du jury"
+            },
+
+
+            # ==========================================================
+            # ERIC-EMMANUEL SCHMITT
+            # ==========================================================
+
+            {
+                "identity_name": "Eric-Emmanuel Schmitt",
+                "role": "dramaturge"
+            },
+            {
+                "identity_name": "Eric-Emmanuel Schmitt",
+                "role": "philosophe"
+            },
+            {
+                "identity_name": "Eric-Emmanuel Schmitt",
+                "role": "écrivain"
+            },
+            {
+                "identity_name": "Eric-Emmanuel Schmitt",
+                "role": "trésorier"
+            },
+            {
+                "identity_name": "Eric-Emmanuel Schmitt",
+                "role": "membre du jury"
+            },
+
+            # ==========================================================
+            # CAMILLE LAURENS
+            # ==========================================================
+
+            {
+                "identity_name": "Camille Laurens",
+                "role": "écrivain"
+            },
+            {
+                "identity_name": "Camille Laurens",
+                "role": "secrétaire général"
+            },
+            {
+                "identity_name": "Camille Laurens",
+                "role": "membre du jury"
+            },
+
+            # ==========================================================
+            # PASCAL BRUCKNER
+            # ==========================================================
+
+            {
+                "identity_name": "Pascal Bruckner",
+                "role": "romancier"
+            },
+            {
+                "identity_name": "Pascal Bruckner",
+                "role": "philosophe"
+            },
+            {
+                "identity_name": "Pascal Bruckner",
+                "role": "essayiste"
+            },
+            {
+                "identity_name": "Pascal Bruckner",
+                "role": "membre du jury"
+            },
+
+            # ==========================================================
+            # CHRISTINE ANGOT
+            # ==========================================================
+
+            {
+                "identity_name": "Christine Angot",
+                "role": "écrivain"
+            },
+            {
+                "identity_name": "Christine Angot",
+                "role": "membre du jury"
+            }
+        ]
+
+
+        # ==========================================================
         # 4. CRÉATION DES IDENTITY
         # ==========================================================
 
@@ -991,7 +1289,65 @@ class DataLoader:
             self.entity_dao.create(entity)
 
         # ==========================================================
-        # 6. CRÉATION DES IDENTITY_ENTITY
+        # 6. CRÉATION DES IDENTITY_ROLE
+        # ==========================================================
+
+        for relation in identity_roles:
+
+            identity = None
+
+            # Recherche de l'Identity correspondante
+            for current_identity in identities:
+
+                if current_identity.under_appelation:
+                    identity_name = (
+                        f"{current_identity.under_appelation} "
+                        f"{current_identity.appelation}"
+                    )
+                else:
+                    identity_name = current_identity.appelation
+
+                if identity_name == relation["identity_name"]:
+                    identity = current_identity
+
+            # Vérification de l'Identity
+            if identity is not None:
+
+                # Vérification de l'id de l'Identity
+                if identity.id_identity is not None:
+
+                    # Recherche de l'id du rôle
+                    role_id = role_ids.get(relation["role"])
+
+                    if role_id is not None:
+
+                        identity_role = IdentityRole(
+                            fk_id_identity=identity.id_identity,
+                            fk_id_role=role_id
+                        )
+
+                        # Insertion dans la BDD
+                        self.identity_role_dao.create(identity_role)
+
+                    else:
+                        print(
+                            f"Rôle introuvable : {relation['role']}"
+                        )
+
+                else:
+                    print(
+                        f"Identité sans id : "
+                        f"{relation['identity_name']}"
+                    )
+
+            else:
+                print(
+                    f"Identité introuvable : "
+                    f"{relation['identity_name']}"
+                )
+
+        # ==========================================================
+        # 7. CRÉATION DES IDENTITY_ENTITY
         # ==========================================================
 
         for relation in identity_entities:
@@ -1066,5 +1422,6 @@ class DataLoader:
         return {
             "identities": identities,
             "entities": entities,
-            "identity_entities": identity_entities
+            "identity_entities": identity_entities,
+            "identity_roles": identity_roles
         }

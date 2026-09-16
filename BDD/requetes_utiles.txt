@@ -7,6 +7,8 @@ DELETE FROM jury;
 DELETE FROM entity;
 DELETE FROM identity;
 DELETE FROM role;
+DELETE FROM identity_role;
+
 
 ALTER TABLE ballot AUTO_INCREMENT = 1;
 ALTER TABLE election AUTO_INCREMENT = 1;

@@ -29,8 +29,13 @@ class RoleDao(Dao[Role]):
             print(f"Erreur lors de la création du rôle : {error}")
             return 0
 
-    def read(self, id_role: int) -> Optional[Role]:
+    def read(self, *id_entity: int) -> Optional[Role]:
         """Retourne le rôle correspondant ou None."""
+        if len(id_entity) != 1:
+            return None
+
+        id_role = id_entity[0]
+
         try:
             with Dao.connection.cursor() as cursor:
                 cursor.execute(

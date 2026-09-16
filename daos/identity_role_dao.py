@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 
 """
-Classe Dao[IdentityEntity]
+Classe Dao[IdentityRole]
 """
 
-from models.identity_entity import IdentityEntity
+from models.identity_role import IdentityRole
 from daos.dao import Dao
 from dataclasses import dataclass
 from typing import Optional
 
 
 @dataclass
-class IdentityEntityDao(Dao[IdentityEntity]):
+class IdentityRoleDao(Dao[IdentityRole]):
 
-    def create(self, identity_entity: IdentityEntity) -> int:
+    def create(self, identity_role: IdentityRole) -> int:
         """
-        Crée une relation entre une Identity et une Entity.
+        Crée une relation entre une Identity et un Role.
 
         Retourne 1 si la création a réussi.
         Retourne 0 en cas d'erreur.
@@ -23,21 +23,19 @@ class IdentityEntityDao(Dao[IdentityEntity]):
         try:
             with Dao.connection.cursor() as cursor:
                 sql = """
-                    INSERT INTO identity_entity
+                    INSERT INTO identity_role
                     (
-                        fk_id_entity,
                         fk_id_identity,
                         fk_id_role
                     )
-                    VALUES (%s, %s, %s)
+                    VALUES (%s, %s)
                 """
 
                 cursor.execute(
                     sql,
                     (
-                        identity_entity.fk_id_entity,
-                        identity_entity.fk_id_identity,
-                        identity_entity.fk_id_role
+                        identity_role.fk_id_identity,
+                        identity_role.fk_id_role
                     )
                 )
 
@@ -49,52 +47,48 @@ class IdentityEntityDao(Dao[IdentityEntity]):
             Dao.connection.rollback()
             print(
                 f"Erreur lors de la création de la relation "
-                f"Identity / Entity : {error}"
+                f"Identity / Role : {error}"
             )
             return 0
 
-    def read(self, *id_entity: int) -> Optional[IdentityEntity]:
+    def read(self, *id_entity: int) -> Optional[IdentityRole]:
         """
-        Renvoie une relation Identity / Entity.
+        Renvoie une relation Identity / Role.
 
         Une relation est identifiée par :
-        - l'id de l'Entity
         - l'id de l'Identity
-        - le rôle
+        - l'id du Role
         """
-        if len(id_entity) != 3:
+
+        if len(id_entity) != 2:
             return None
 
-        fk_id_entity = id_entity[0]
-        fk_id_identity = id_entity[1]
-        fk_id_role = id_entity[2]
+        id_identity = id_entity[0]
+        id_role = id_entity[1]
+
         try:
             with Dao.connection.cursor() as cursor:
                 sql = """
                     SELECT
-                        fk_id_entity,
                         fk_id_identity,
                         fk_id_role
-                    FROM identity_entity
-                    WHERE fk_id_entity = %s
-                      AND fk_id_identity = %s
+                    FROM identity_role
+                    WHERE fk_id_identity = %s
                       AND fk_id_role = %s
                 """
 
                 cursor.execute(
                     sql,
                     (
-                        fk_id_entity,
-                        fk_id_identity,
-                        fk_id_role
+                        id_identity,
+                        id_role
                     )
                 )
 
                 record = cursor.fetchone()
 
             if record is not None:
-                return IdentityEntity(
-                    fk_id_entity=record["fk_id_entity"],
+                return IdentityRole(
                     fk_id_identity=record["fk_id_identity"],
                     fk_id_role=record["fk_id_role"]
                 )
@@ -104,32 +98,32 @@ class IdentityEntityDao(Dao[IdentityEntity]):
         except Exception as error:
             print(
                 f"Erreur lors de la lecture de la relation "
-                f"Identity / Entity : {error}"
+                f"Identity / Role : {error}"
             )
             return None
 
-    def update(self, identity_entity: IdentityEntity) -> bool:
+    def update(self, identity_role: IdentityRole) -> bool:
         """
-        Modifie le rôle d'une relation Identity / Entity.
+        Modifie une relation Identity / Role.
 
-        Les deux clés étrangères constituent l'identification
-        de la relation.
+        Comme les deux colonnes constituent la clé primaire,
+        on identifie la relation avec les anciennes valeurs.
         """
         try:
             with Dao.connection.cursor() as cursor:
                 sql = """
-                    UPDATE identity_entity
+                    UPDATE identity_role
                     SET fk_id_role = %s
-                    WHERE fk_id_entity = %s
-                      AND fk_id_identity = %s
+                    WHERE fk_id_identity = %s
+                      AND fk_id_role = %s
                 """
 
                 cursor.execute(
                     sql,
                     (
-                        identity_entity.fk_id_role,
-                        identity_entity.fk_id_entity,
-                        identity_entity.fk_id_identity
+                        identity_role.fk_id_role,
+                        identity_role.fk_id_identity,
+                        identity_role.fk_id_role
                     )
                 )
 
@@ -141,29 +135,27 @@ class IdentityEntityDao(Dao[IdentityEntity]):
             Dao.connection.rollback()
             print(
                 f"Erreur lors de la modification de la relation "
-                f"Identity / Entity : {error}"
+                f"Identity / Role : {error}"
             )
             return False
 
-    def delete(self, identity_entity: IdentityEntity) -> bool:
+    def delete(self, identity_role: IdentityRole) -> bool:
         """
-        Supprime une relation Identity / Entity.
+        Supprime une relation Identity / Role.
         """
         try:
             with Dao.connection.cursor() as cursor:
                 sql = """
-                    DELETE FROM identity_entity
-                    WHERE fk_id_entity = %s
-                      AND fk_id_identity = %s
+                    DELETE FROM identity_role
+                    WHERE fk_id_identity = %s
                       AND fk_id_role = %s
                 """
 
                 cursor.execute(
                     sql,
                     (
-                        identity_entity.fk_id_entity,
-                        identity_entity.fk_id_identity,
-                        identity_entity.fk_id_role
+                        identity_role.fk_id_identity,
+                        identity_role.fk_id_role
                     )
                 )
 
@@ -175,6 +167,6 @@ class IdentityEntityDao(Dao[IdentityEntity]):
             Dao.connection.rollback()
             print(
                 f"Erreur lors de la suppression de la relation "
-                f"Identity / Entity : {error}"
+                f"Identity / Role : {error}"
             )
             return False

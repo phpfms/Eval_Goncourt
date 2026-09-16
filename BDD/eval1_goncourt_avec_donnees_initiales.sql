@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost
--- Généré le : mer. 16 sep. 2026 à 08:40
+-- Généré le : mer. 16 sep. 2026 à 13:59
 -- Version du serveur : 11.7.1-MariaDB
 -- Version de PHP : 8.5.4
 
@@ -31,8 +31,8 @@ CREATE TABLE `ballot` (
   `id_ballot` bigint(20) NOT NULL,
   `fk_id_election` smallint(5) UNSIGNED NOT NULL,
   `date_ballot` date NOT NULL,
-  `fk_id_entity_who_choose` bigint(20) NOT NULL,
-  `fk_id_entity_chosen` bigint(20) NOT NULL
+  `fk_id_entity_who_choose` bigint(20) UNSIGNED NOT NULL,
+  `fk_id_entity_chosen` bigint(20) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- --------------------------------------------------------
@@ -49,7 +49,7 @@ CREATE TABLE `election` (
   `date_election` date NOT NULL,
   `degree_election` varchar(50) NOT NULL,
   `done` tinyint(1) NOT NULL,
-  `fk_id_winner` bigint(20) DEFAULT NULL,
+  `fk_id_winner` bigint(20) UNSIGNED DEFAULT NULL,
   `final` tinyint(1) NOT NULL,
   `modality` varchar(50) DEFAULT NULL,
   `fk_id_election_mother` smallint(5) UNSIGNED DEFAULT NULL
@@ -62,7 +62,7 @@ CREATE TABLE `election` (
 --
 
 CREATE TABLE `entity` (
-  `id_entity` bigint(20) NOT NULL,
+  `id_entity` bigint(20) UNSIGNED NOT NULL,
   `ISBN` bigint(20) DEFAULT NULL,
   `price` decimal(15,2) DEFAULT NULL,
   `name` varchar(50) NOT NULL,
@@ -72,7 +72,7 @@ CREATE TABLE `entity` (
   `creation_date` date NOT NULL,
   `nb` decimal(15,2) NOT NULL,
   `unit_nb` varchar(10) NOT NULL,
-  `fk_id_entity_mother` bigint(20) DEFAULT NULL
+  `fk_id_entity_mother` bigint(20) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 --
@@ -104,7 +104,7 @@ INSERT INTO `entity` (`id_entity`, `ISBN`, `price`, `name`, `first_name`, `type`
 --
 
 CREATE TABLE `entity_election` (
-  `fk_id_entity` bigint(20) NOT NULL,
+  `fk_id_entity` bigint(20) UNSIGNED NOT NULL,
   `fk_id_election` smallint(5) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
@@ -116,7 +116,7 @@ CREATE TABLE `entity_election` (
 
 CREATE TABLE `entity_jury` (
   `fk_id_jury` int(11) NOT NULL,
-  `fk_id_entity` bigint(20) NOT NULL
+  `fk_id_entity` bigint(20) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- --------------------------------------------------------
@@ -141,46 +141,56 @@ CREATE TABLE `identity` (
 INSERT INTO `identity` (`id_identity`, `appelation`, `under_appelation`, `description`, `address`, `fk_id_identity_mother`) VALUES
 (1, 'Académie Goncourt', NULL, 'Académie littéraire française chargée notamment de décerner le prix Goncourt.', NULL, NULL),
 (2, 'Prix Goncourt', NULL, 'Prix littéraire français créé en 1903 et décerné chaque année par l\'Académie Goncourt.', NULL, NULL),
-(3, 'Bergmann', 'Boris', 'Boris Bergmann est né à Paris en 1992. Il est l\'auteur de cinq romans dont Nage Libre (prix de la Vocation 2018) et Les Corps insurgés (Prix Fénéon 2020). Il a été pensionnaire de la Villa Medicis et de la Villa Kujoyama. Il a organisé des expositions en France et à l\'étranger (autour de l\'oeuvre de René Daumal, notamment) et collabore en tant qu\'éditeur associé à la revue d\'art et de littérature Magma. Minotaure est son premier roman autobiographique.', NULL, NULL),
-(4, 'Chennevière', 'Louise', 'Autrice, chanteuse et musicienne française née en 1993.', NULL, NULL),
-(5, 'Devi', 'Ananda', 'Née à l\'île Maurice, Ananda Devi est l\'autrice d\'une oeuvre récompensée par de nombreux prix et traduite en une douzaine de langues. Parmi ses livres les plus marquants, on peut citer Ève de ses décombres (Gallimard, 2006, prix des Cinq Continents, prix RFO, prix Télévision Suisse Romande), Le Sari vert (Gallimard 2009, prix Louis Guilloux), Le Rire des déesses (Grasset, 2021, prix Femina des lycéens) et Le Jour des caméléons (Grasset, 2023, prix de la Langue française). Elle a reçu le prestigieux prix américain Neustadt 2024 pour l\'ensemble de son oeuvre.', NULL, NULL),
-(6, 'Devillers', 'Sonia', 'Sonia Devillers est journaliste dans la matinale de France Inter et présentatrice du « Dessous des images » sur Arte. Son premier livre, Les Exportés (Flammarion, 2022), raconte comment sa famille a fui la Roumanie communiste.', NULL, NULL),
-(7, 'Godard', 'Anne', 'Anne Godard est née à Paris en 1971, elle enseigne la littérature et l\'écriture créative à l\'université Sorbonne-Nouvelle. Elle a publié aux Éditions de Minuit L\'Inconsolable en 2006 (prix RTL-Lire) et Une chance folle en 2017 (prix Alain Spiess du deuxième roman). Nous aussi est son troisième roman.', NULL, NULL),
-(8, 'Grondeau', 'Olivier', 'Après des études littéraires et des emplois de libraire, Olivier Grondeau est parti huit ans sur les routes, avant d\'être arrêté en Iran. Libéré en mars 2025, il poursuit désormais des études d\'anthropologie. L\'écriture l\'a toujours accompagné. Joseph dans la nuit est son premier livre.', NULL, NULL),
-(9, 'Haenel', 'Yannick', 'Yannick Haenel a notamment publié Cercle (prix Décembre 2007 et prix Roger Nimier 2008), Jan Karski (prix Interallié et prix du Roman Fnac 2009) et Tiens ferme ta couronne (prix Médicis 2017).', NULL, NULL),
-(10, 'Hassaine', 'Lilia', 'Lilia Hassaine est notamment l\'autrice de Panorama (2023, prix Renaudot des lycéens). JEest son quatrième roman.', NULL, NULL),
-(11, 'Jaenada', 'Philippe', 'Philippe Jaenada est l\'auteur d\'une douzaine de romans, dont Le Chameau sauvage (Julliard, 1997, prix de Flore), La Petite Femelle (2015) et La Serpe (2017, prix Femina) et plus récemment, chez Mialet-Barrault Éditeurs, Au printemps des monstres et La désinvolture est une bien belle chose (2021 et 2024). Il rejoint en cette rentrée littéraire les Éditions Flammarion.', NULL, NULL),
-(12, 'Jouannais', 'Jean-Yves', 'Jean-Yves Jouannais, né en 1964, est professeur à l\'École nationale supérieure des beaux-arts de Paris. Il a publié, notamment, L\'Idiotie (Beaux-Arts livres), Artistes sans oeuvres (Verticales), Les Barrages de sable (Grasset). De 2008 à 2024, il est l\'auteur du cycle de conférences-performances, L\'Encyclopédie des guerres, au Centre Pompidou (Paris).', NULL, NULL),
-(13, 'Marsantes', 'Emma', 'Écrivaine française.', NULL, NULL),
-(14, 'Mélois', 'Clémentine', 'Clémentine Mélois est née en 1980. Elle est notamment l\'autrice, aux Editions Grasset, de Cent titres. Sinon j\'oublie, Dehors, la tempête, ainsi que du très remarqué Alors c\'est bien (« L\'Arbalète », Editions Gallimard, 2024).', NULL, NULL),
-(15, 'Orélien', 'Thélyson', 'Né en 1988, Thélyson Orélien est un auteur québécois d\'origine haïtienne. Poète et critique, il construit une oeuvre habitée par la mémoire, l\'exil et la question de l\'appartenance. Depuis sa publication au Québec par les Éditions du Boréal, C\'était ça ou mourir rencontre un écho international exceptionnel et est en cours de traduction dans plus de vingt langues. Un premier roman phénomène qui révèle une grande voix de la littérature contemporaine.', NULL, NULL),
-(16, 'Prudhomme', 'Sylvain', 'Sylvain Prudhomme est l\'auteur de romans, récits et reportages salués par la critique et traduits à l\'étranger. Il a reçu le prix Femina en 2019 pour Par les routes. L\'Enfant dans le taxi a paru en 2023 aux Éditions de Minuit. Coyote, récit d\'un voyage le long de la frontière américano-mexicaine, a reçu le prix Nicolas Bouvier 2025.', NULL, NULL),
-(17, 'Rolin', 'Olivier', 'Écrivain français, auteur notamment de romans, récits et essais.', NULL, NULL),
-(18, 'Trigano', 'Patrice', 'Écrivain et galeriste français.', NULL, NULL),
-(19, 'Albin Michel', NULL, 'Maison d\'édition française.', '22 rue Huyghens 75014 Paris', NULL),
-(20, 'P.O.L', NULL, 'Maison d\'édition française spécialisée notamment dans la littérature contemporaine.', '33 rue Saint-André-des-Arts 75006 Paris', NULL),
-(21, 'Grasset', NULL, 'Maison d\'édition française publiant notamment de la littérature française et étrangère.', '61 rue des Saints-Pères 75006 Paris', NULL),
-(22, 'Robert Laffont', NULL, 'Maison d\'édition française du groupe Editis.', '92 avenue de France 75013 Paris', NULL),
-(23, 'Actes Sud', NULL, 'Maison d\'édition française indépendante publiant notamment de la littérature.', '47 rue du Docteur Fanton 13200 Arles Cedex', NULL),
-(24, 'L\'Iconoclaste', NULL, 'Maison d\'édition française publiant notamment des romans, essais et documents.', '26 rue Jacob 75006 Paris', NULL),
-(25, 'Gallimard', NULL, 'Maison d\'édition française historique spécialisée notamment dans la littérature.', '5 rue Gaston Gallimard 75007 Paris', NULL),
-(26, 'Flammarion', NULL, 'Maison d\'édition française publiant notamment de la littérature, des essais et des documents.', '82 rue Saint-Lazare 75009 Paris', NULL),
-(27, 'Verdier', NULL, 'Maison d\'édition française indépendante.', '11220 Lagrasse', NULL),
-(28, 'Minuit', NULL, 'Maison d\'édition française connue notamment pour sa littérature contemporaine.', '7 rue Bernard-Palissy 75006 Paris', NULL),
-(29, 'Maurice Nadeau', NULL, 'Maison d\'édition française indépendante fondée par Maurice Nadeau.', '5 rue Malebranche 75005 Paris', NULL),
-(30, 'Georges Bataille', NULL, 'Personnage principal appelé à témoigner au procès de Jean-Jacques Pauvert', NULL, NULL),
-(31, 'Jean-Jacques Pauvert', NULL, 'Personnage principal poursuivi pour avoir publié les œuvres de Sade', NULL, NULL),
-(32, 'Paola', NULL, 'Personnage principal photographe et artiste disparue en montagne', NULL, NULL),
-(33, 'Le narrateur', NULL, 'Personnage principal, il est le double de l\'auteur. il mène l\'enquête', NULL, NULL),
-(34, 'Jonas Dorléon', NULL, 'Personnage principal, il quitte Haïti. il mène l\'enquête', NULL, NULL),
-(35, 'Emilie', NULL, 'Personnage principal, narratrice, elle déménage.', NULL, NULL),
-(36, 'Tristan', NULL, 'Personnage principal, ex d\'Emilie.', NULL, NULL),
-(37, 'Sandra', NULL, 'Personnage principal, amie d\'Emilie.', NULL, NULL),
-(38, 'Mia', NULL, 'Personnage principal, elle est le double de l\'auteur. elle se replonge dans la saga familiale', NULL, NULL),
-(39, 'Jean Deichel', NULL, 'Personnage principal, protagoniste jeune agrégé de lettres et professeur de français stagiaire dans un collège de banlieue parisienne', NULL, NULL),
-(40, 'Anya', NULL, 'Personnage principal, tutrice de Jean au sein de l\'établissement', NULL, NULL),
-(41, 'Streger', NULL, 'Personnage principal, principal de l\'établissement', NULL, NULL),
-(42, 'Laguille', NULL, 'Personnage principal, adjointe du principal de l\'établissement', NULL, NULL);
+(3, 'Decoin', 'Didier', 'Écrivain et scénariste. Entre à l’Académie Goncourt le 6 juin 1995, succédant à Jean Cayrol au 3ème couvert. Après en avoir été le Secrétaire général, il est Président de la Société littéraire du 20 janvier 2020 au 13 mai 2024.', NULL, NULL),
+(4, 'Chandernagor', 'Françoise', 'Écrivaine. Ancien membre du Conseil d\'État. Entre à l’Académie Goncourt le 6 juin 1995, succédant à Emmanuel Roblès au 8ème couvert. Elle en est la Vice-Présidente.', NULL, NULL),
+(5, 'Ben Jelloun', 'Tahar', 'Écrivain, poète et peintre. Entre à l’Académie Goncourt le 6 mai 2008, succédant à François Nourissier au 6ème couvert.', NULL, NULL),
+(6, 'Constant', 'Paule', 'Écrivaine. Entre à l’Académie Goncourt le 8 janvier 2013, succédant à Robert Sabatier au 4ème couvert.', NULL, NULL),
+(7, 'Claudel', 'Philippe', 'Écrivain, réalisateur et dramaturge. Entre à l’Académie Goncourt le 11 janvier 2012, succédant à Jorge Semprun au 9ème couvert. Après en avoir été le Trésorier, puis Secrétaire général, il est élu Président de la Société littéraire le 13 mai 2024.', NULL, NULL),
+(8, 'Assouline', 'Pierre', 'Écrivain et journaliste. Entre à l’Académie Goncourt le 11 janvier 2012, succédant à Françoise Mallet-Joris au 10ème couvert.', NULL, NULL),
+(9, 'Schmitt', 'Eric-Emmanuel', 'Dramaturge, philosophe et écrivain. Entre à l’Académie Goncourt le 5 janvier 2016, succédant à Edmonde Charles-Roux au 2ème couvert. Élu trésorier le 6 mai 2025.', NULL, NULL),
+(10, 'Laurens', 'Camille', 'Écrivaine. Entre à l’Académie Goncourt le 11 février 2020, succédant à Virginie Despentes au 7ème couvert. Élue secrétaire générale le 13 mai 2024.', NULL, NULL),
+(11, 'Bruckner', 'Pascal', 'Romancier, philosophe et essayiste. Entre à l’Académie Goncourt le 11 février 2020, succédant à Bernard Pivot au 1er couvert.', NULL, NULL),
+(12, 'Angot', 'Christine', 'Écrivaine. Entre à l’Académie Goncourt le 28 février 2023, succédant à Patrick Rambaud au 5ème couvert.', NULL, NULL),
+(13, 'Bergmann', 'Boris', 'Boris Bergmann est né à Paris en 1992. Il est l\'auteur de cinq romans dont Nage Libre (prix de la Vocation 2018) et Les Corps insurgés (Prix Fénéon 2020). Il a été pensionnaire de la Villa Medicis et de la Villa Kujoyama. Il a organisé des expositions en France et à l\'étranger (autour de l\'oeuvre de René Daumal, notamment) et collabore en tant qu\'éditeur associé à la revue d\'art et de littérature Magma. Minotaure est son premier roman autobiographique.', NULL, NULL),
+(14, 'Chennevière', 'Louise', 'Autrice, chanteuse et musicienne française née en 1993.', NULL, NULL),
+(15, 'Devi', 'Ananda', 'Née à l\'île Maurice, Ananda Devi est l\'autrice d\'une oeuvre récompensée par de nombreux prix et traduite en une douzaine de langues. Parmi ses livres les plus marquants, on peut citer Ève de ses décombres (Gallimard, 2006, prix des Cinq Continents, prix RFO, prix Télévision Suisse Romande), Le Sari vert (Gallimard 2009, prix Louis Guilloux), Le Rire des déesses (Grasset, 2021, prix Femina des lycéens) et Le Jour des caméléons (Grasset, 2023, prix de la Langue française). Elle a reçu le prestigieux prix américain Neustadt 2024 pour l\'ensemble de son oeuvre.', NULL, NULL),
+(16, 'Devillers', 'Sonia', 'Sonia Devillers est journaliste dans la matinale de France Inter et présentatrice du « Dessous des images » sur Arte. Son premier livre, Les Exportés (Flammarion, 2022), raconte comment sa famille a fui la Roumanie communiste.', NULL, NULL),
+(17, 'Godard', 'Anne', 'Anne Godard est née à Paris en 1971, elle enseigne la littérature et l\'écriture créative à l\'université Sorbonne-Nouvelle. Elle a publié aux Éditions de Minuit L\'Inconsolable en 2006 (prix RTL-Lire) et Une chance folle en 2017 (prix Alain Spiess du deuxième roman). Nous aussi est son troisième roman.', NULL, NULL),
+(18, 'Grondeau', 'Olivier', 'Après des études littéraires et des emplois de libraire, Olivier Grondeau est parti huit ans sur les routes, avant d\'être arrêté en Iran. Libéré en mars 2025, il poursuit désormais des études d\'anthropologie. L\'écriture l\'a toujours accompagné. Joseph dans la nuit est son premier livre.', NULL, NULL),
+(19, 'Haenel', 'Yannick', 'Yannick Haenel a notamment publié Cercle (prix Décembre 2007 et prix Roger Nimier 2008), Jan Karski (prix Interallié et prix du Roman Fnac 2009) et Tiens ferme ta couronne (prix Médicis 2017).', NULL, NULL),
+(20, 'Hassaine', 'Lilia', 'Lilia Hassaine est notamment l\'autrice de Panorama (2023, prix Renaudot des lycéens). JEest son quatrième roman.', NULL, NULL),
+(21, 'Jaenada', 'Philippe', 'Philippe Jaenada est l\'auteur d\'une douzaine de romans, dont Le Chameau sauvage (Julliard, 1997, prix de Flore), La Petite Femelle (2015) et La Serpe (2017, prix Femina) et plus récemment, chez Mialet-Barrault Éditeurs, Au printemps des monstres et La désinvolture est une bien belle chose (2021 et 2024). Il rejoint en cette rentrée littéraire les Éditions Flammarion.', NULL, NULL),
+(22, 'Jouannais', 'Jean-Yves', 'Jean-Yves Jouannais, né en 1964, est professeur à l\'École nationale supérieure des beaux-arts de Paris. Il a publié, notamment, L\'Idiotie (Beaux-Arts livres), Artistes sans oeuvres (Verticales), Les Barrages de sable (Grasset). De 2008 à 2024, il est l\'auteur du cycle de conférences-performances, L\'Encyclopédie des guerres, au Centre Pompidou (Paris).', NULL, NULL),
+(23, 'Marsantes', 'Emma', 'Écrivaine française.', NULL, NULL),
+(24, 'Mélois', 'Clémentine', 'Clémentine Mélois est née en 1980. Elle est notamment l\'autrice, aux Editions Grasset, de Cent titres. Sinon j\'oublie, Dehors, la tempête, ainsi que du très remarqué Alors c\'est bien (« L\'Arbalète », Editions Gallimard, 2024).', NULL, NULL),
+(25, 'Orélien', 'Thélyson', 'Né en 1988, Thélyson Orélien est un auteur québécois d\'origine haïtienne. Poète et critique, il construit une oeuvre habitée par la mémoire, l\'exil et la question de l\'appartenance. Depuis sa publication au Québec par les Éditions du Boréal, C\'était ça ou mourir rencontre un écho international exceptionnel et est en cours de traduction dans plus de vingt langues. Un premier roman phénomène qui révèle une grande voix de la littérature contemporaine.', NULL, NULL),
+(26, 'Prudhomme', 'Sylvain', 'Sylvain Prudhomme est l\'auteur de romans, récits et reportages salués par la critique et traduits à l\'étranger. Il a reçu le prix Femina en 2019 pour Par les routes. L\'Enfant dans le taxi a paru en 2023 aux Éditions de Minuit. Coyote, récit d\'un voyage le long de la frontière américano-mexicaine, a reçu le prix Nicolas Bouvier 2025.', NULL, NULL),
+(27, 'Rolin', 'Olivier', 'Écrivain français, auteur notamment de romans, récits et essais.', NULL, NULL),
+(28, 'Trigano', 'Patrice', 'Écrivain et galeriste français.', NULL, NULL),
+(29, 'Albin Michel', NULL, 'Maison d\'édition française.', '22 rue Huyghens 75014 Paris', NULL),
+(30, 'P.O.L', NULL, 'Maison d\'édition française spécialisée notamment dans la littérature contemporaine.', '33 rue Saint-André-des-Arts 75006 Paris', NULL),
+(31, 'Grasset', NULL, 'Maison d\'édition française publiant notamment de la littérature française et étrangère.', '61 rue des Saints-Pères 75006 Paris', NULL),
+(32, 'Robert Laffont', NULL, 'Maison d\'édition française du groupe Editis.', '92 avenue de France 75013 Paris', NULL),
+(33, 'Actes Sud', NULL, 'Maison d\'édition française indépendante publiant notamment de la littérature.', '47 rue du Docteur Fanton 13200 Arles Cedex', NULL),
+(34, 'L\'Iconoclaste', NULL, 'Maison d\'édition française publiant notamment des romans, essais et documents.', '26 rue Jacob 75006 Paris', NULL),
+(35, 'Gallimard', NULL, 'Maison d\'édition française historique spécialisée notamment dans la littérature.', '5 rue Gaston Gallimard 75007 Paris', NULL),
+(36, 'Flammarion', NULL, 'Maison d\'édition française publiant notamment de la littérature, des essais et des documents.', '82 rue Saint-Lazare 75009 Paris', NULL),
+(37, 'Verdier', NULL, 'Maison d\'édition française indépendante.', '11220 Lagrasse', NULL),
+(38, 'Minuit', NULL, 'Maison d\'édition française connue notamment pour sa littérature contemporaine.', '7 rue Bernard-Palissy 75006 Paris', NULL),
+(39, 'Maurice Nadeau', NULL, 'Maison d\'édition française indépendante fondée par Maurice Nadeau.', '5 rue Malebranche 75005 Paris', NULL),
+(40, 'Georges Bataille', NULL, 'Personnage principal appelé à témoigner au procès de Jean-Jacques Pauvert', NULL, NULL),
+(41, 'Jean-Jacques Pauvert', NULL, 'Personnage principal poursuivi pour avoir publié les œuvres de Sade', NULL, NULL),
+(42, 'Paola', NULL, 'Personnage principal photographe et artiste disparue en montagne', NULL, NULL),
+(43, 'Le narrateur', NULL, 'Personnage principal, il est le double de l\'auteur. il mène l\'enquête', NULL, NULL),
+(44, 'Jonas Dorléon', NULL, 'Personnage principal, il quitte Haïti. il mène l\'enquête', NULL, NULL),
+(45, 'Emilie', NULL, 'Personnage principal, narratrice, elle déménage.', NULL, NULL),
+(46, 'Tristan', NULL, 'Personnage principal, ex d\'Emilie.', NULL, NULL),
+(47, 'Sandra', NULL, 'Personnage principal, amie d\'Emilie.', NULL, NULL),
+(48, 'Mia', NULL, 'Personnage principal, elle est le double de l\'auteur. elle se replonge dans la saga familiale', NULL, NULL),
+(49, 'Jean Deichel', NULL, 'Personnage principal, protagoniste jeune agrégé de lettres et professeur de français stagiaire dans un collège de banlieue parisienne', NULL, NULL),
+(50, 'Anya', NULL, 'Personnage principal, tutrice de Jean au sein de l\'établissement', NULL, NULL),
+(51, 'Streger', NULL, 'Personnage principal, principal de l\'établissement', NULL, NULL),
+(52, 'Laguille', NULL, 'Personnage principal, adjointe du principal de l\'établissement', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -189,9 +199,9 @@ INSERT INTO `identity` (`id_identity`, `appelation`, `under_appelation`, `descri
 --
 
 CREATE TABLE `identity_entity` (
-  `fk_id_entity` bigint(20) NOT NULL,
+  `fk_id_entity` bigint(20) UNSIGNED NOT NULL,
   `fk_id_identity` bigint(20) UNSIGNED NOT NULL,
-  `fk_id_role` varchar(50) NOT NULL
+  `fk_id_role` smallint(6) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 --
@@ -199,51 +209,105 @@ CREATE TABLE `identity_entity` (
 --
 
 INSERT INTO `identity_entity` (`fk_id_entity`, `fk_id_identity`, `fk_id_role`) VALUES
-(1, 3, 'auteur'),
-(2, 4, 'auteur'),
-(3, 5, 'auteur'),
-(11, 6, 'auteur'),
-(16, 7, 'auteur'),
-(4, 8, 'auteur'),
-(7, 9, 'auteur'),
-(15, 10, 'auteur'),
-(6, 11, 'auteur'),
-(5, 12, 'auteur'),
-(8, 13, 'auteur'),
-(12, 14, 'auteur'),
-(10, 15, 'auteur'),
-(9, 16, 'auteur'),
-(14, 17, 'auteur'),
-(13, 18, 'auteur'),
-(1, 19, 'editeur'),
-(5, 19, 'editeur'),
-(2, 20, 'editeur'),
-(3, 21, 'editeur'),
-(10, 21, 'editeur'),
-(11, 22, 'editeur'),
-(16, 23, 'editeur'),
-(4, 24, 'editeur'),
-(7, 25, 'editeur'),
-(12, 25, 'editeur'),
-(14, 25, 'editeur'),
-(15, 25, 'editeur'),
-(6, 26, 'editeur'),
-(8, 27, 'editeur'),
-(9, 28, 'editeur'),
-(13, 29, 'editeur'),
-(13, 30, 'personnage_principal'),
-(13, 31, 'personnage_principal'),
-(9, 32, 'personnage_principal'),
-(9, 33, 'personnage_principal'),
-(10, 34, 'personnage_principal'),
-(12, 35, 'personnage_principal'),
-(12, 36, 'personnage_principal'),
-(12, 37, 'personnage_principal'),
-(8, 38, 'personnage_principal'),
-(7, 39, 'personnage_principal'),
-(7, 40, 'personnage_principal'),
-(7, 41, 'personnage_principal'),
-(7, 42, 'personnage_principal');
+(1, 13, 2),
+(2, 14, 2),
+(3, 15, 2),
+(4, 18, 2),
+(5, 22, 2),
+(6, 21, 2),
+(7, 19, 2),
+(8, 23, 2),
+(9, 26, 2),
+(10, 25, 2),
+(11, 16, 2),
+(12, 24, 2),
+(13, 28, 2),
+(14, 27, 2),
+(15, 20, 2),
+(16, 17, 2),
+(1, 29, 4),
+(2, 30, 4),
+(3, 31, 4),
+(4, 34, 4),
+(5, 29, 4),
+(6, 36, 4),
+(7, 35, 4),
+(8, 37, 4),
+(9, 38, 4),
+(10, 31, 4),
+(11, 32, 4),
+(12, 35, 4),
+(13, 39, 4),
+(14, 35, 4),
+(15, 35, 4),
+(16, 33, 4),
+(7, 49, 11),
+(7, 50, 11),
+(7, 51, 11),
+(7, 52, 11),
+(8, 48, 11),
+(9, 42, 11),
+(9, 43, 11),
+(10, 44, 11),
+(12, 45, 11),
+(12, 46, 11),
+(12, 47, 11),
+(13, 40, 11),
+(13, 41, 11);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `identity_role`
+--
+
+CREATE TABLE `identity_role` (
+  `fk_id_identity` bigint(20) UNSIGNED NOT NULL,
+  `fk_id_role` smallint(5) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+--
+-- Déchargement des données de la table `identity_role`
+--
+
+INSERT INTO `identity_role` (`fk_id_identity`, `fk_id_role`) VALUES
+(4, 1),
+(7, 3),
+(9, 3),
+(11, 5),
+(3, 6),
+(4, 6),
+(5, 6),
+(6, 6),
+(7, 6),
+(8, 6),
+(9, 6),
+(10, 6),
+(12, 6),
+(8, 7),
+(5, 9),
+(6, 9),
+(7, 9),
+(8, 9),
+(9, 9),
+(10, 9),
+(11, 9),
+(12, 9),
+(5, 10),
+(9, 12),
+(11, 12),
+(5, 13),
+(3, 14),
+(7, 14),
+(3, 15),
+(7, 16),
+(11, 18),
+(3, 19),
+(7, 20),
+(10, 20),
+(7, 22),
+(9, 22),
+(4, 23);
 
 -- --------------------------------------------------------
 
@@ -255,10 +319,50 @@ CREATE TABLE `jury` (
   `id_jury` int(11) NOT NULL,
   `date_begin` date NOT NULL,
   `date_end` date DEFAULT NULL,
-  `fk_id_entity_president` bigint(20) DEFAULT NULL,
+  `fk_id_entity_president` bigint(20) UNSIGNED DEFAULT NULL,
   `nb_entity` smallint(6) NOT NULL,
   `fk_id_jury_mother` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `role`
+--
+
+CREATE TABLE `role` (
+  `id_role` smallint(5) UNSIGNED NOT NULL,
+  `name_role` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+--
+-- Déchargement des données de la table `role`
+--
+
+INSERT INTO `role` (`id_role`, `name_role`) VALUES
+(1, 'ancien membre du conseil d\'etat'),
+(2, 'auteur'),
+(3, 'dramaturge'),
+(6, 'écrivain'),
+(4, 'éditeur'),
+(5, 'essayiste'),
+(7, 'journaliste'),
+(8, 'livre'),
+(9, 'membre du jury'),
+(10, 'peintre'),
+(11, 'personnage_principal'),
+(12, 'philosophe'),
+(13, 'poète'),
+(14, 'président'),
+(15, 'président du jury'),
+(16, 'réalisateur'),
+(17, 'relieur'),
+(18, 'romancier'),
+(19, 'scénariste'),
+(20, 'secrétaire général'),
+(21, 'traducteur'),
+(22, 'trésorier'),
+(23, 'vice-président du jury');
 
 --
 -- Index pour les tables déchargées
@@ -289,8 +393,8 @@ ALTER TABLE `election`
 ALTER TABLE `entity`
   ADD PRIMARY KEY (`id_entity`),
   ADD UNIQUE KEY `ISBN` (`ISBN`),
-  ADD KEY `fk_entity_mother` (`fk_id_entity_mother`),
-  ADD KEY `idx_entity_name` (`name`);
+  ADD KEY `idx_entity_name` (`name`),
+  ADD KEY `fk_entity_mother` (`fk_id_entity_mother`);
 
 --
 -- Index pour la table `entity_election`
@@ -319,7 +423,15 @@ ALTER TABLE `identity`
 --
 ALTER TABLE `identity_entity`
   ADD PRIMARY KEY (`fk_id_entity`,`fk_id_identity`,`fk_id_role`),
-  ADD KEY `idx_identity_entity_identity` (`fk_id_identity`);
+  ADD KEY `idx_identity_entity_identity` (`fk_id_identity`),
+  ADD KEY `fk_identity_entity_role` (`fk_id_role`);
+
+--
+-- Index pour la table `identity_role`
+--
+ALTER TABLE `identity_role`
+  ADD PRIMARY KEY (`fk_id_identity`,`fk_id_role`),
+  ADD KEY `fk_identity_role_role` (`fk_id_role`);
 
 --
 -- Index pour la table `jury`
@@ -328,6 +440,13 @@ ALTER TABLE `jury`
   ADD PRIMARY KEY (`id_jury`),
   ADD KEY `fk_jury_mother` (`fk_id_jury_mother`),
   ADD KEY `fk_jury_president` (`fk_id_entity_president`);
+
+--
+-- Index pour la table `role`
+--
+ALTER TABLE `role`
+  ADD PRIMARY KEY (`id_role`),
+  ADD UNIQUE KEY `uk_role_name` (`name_role`);
 
 --
 -- AUTO_INCREMENT pour les tables déchargées
@@ -349,19 +468,25 @@ ALTER TABLE `election`
 -- AUTO_INCREMENT pour la table `entity`
 --
 ALTER TABLE `entity`
-  MODIFY `id_entity` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id_entity` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT pour la table `identity`
 --
 ALTER TABLE `identity`
-  MODIFY `id_identity` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `id_identity` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT pour la table `jury`
 --
 ALTER TABLE `jury`
   MODIFY `id_jury` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `role`
+--
+ALTER TABLE `role`
+  MODIFY `id_role` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- Contraintes pour les tables déchargées
@@ -414,7 +539,15 @@ ALTER TABLE `identity`
 --
 ALTER TABLE `identity_entity`
   ADD CONSTRAINT `fk_identity_entity_entity` FOREIGN KEY (`fk_id_entity`) REFERENCES `entity` (`id_entity`),
-  ADD CONSTRAINT `fk_identity_entity_identity` FOREIGN KEY (`fk_id_identity`) REFERENCES `identity` (`id_identity`);
+  ADD CONSTRAINT `fk_identity_entity_identity` FOREIGN KEY (`fk_id_identity`) REFERENCES `identity` (`id_identity`),
+  ADD CONSTRAINT `fk_identity_entity_role` FOREIGN KEY (`fk_id_role`) REFERENCES `role` (`id_role`);
+
+--
+-- Contraintes pour la table `identity_role`
+--
+ALTER TABLE `identity_role`
+  ADD CONSTRAINT `fk_identity_role_identity` FOREIGN KEY (`fk_id_identity`) REFERENCES `identity` (`id_identity`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_identity_role_role` FOREIGN KEY (`fk_id_role`) REFERENCES `role` (`id_role`) ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `jury`
