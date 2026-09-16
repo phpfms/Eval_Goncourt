@@ -3,7 +3,9 @@ from datetime import date
 from models.identity import Identity
 from models.entity import Entity
 from models.identity_entity import IdentityEntity
+from models.role import Role
 
+from daos.role_dao import RoleDao
 from daos.identity_dao import IdentityDao
 from daos.entity_dao import EntityDao
 from daos.identity_entity_dao import IdentityEntityDao
@@ -29,11 +31,49 @@ class DataLoader:
         self.identity_dao = IdentityDao()
         self.entity_dao = EntityDao()
         self.identity_entity_dao = IdentityEntityDao()
+        self.role_dao = RoleDao()
 
     def load(self):
         """
         Charge les données initiales dans la BDD.
         """
+
+        # ==========================================================
+        # 0. RÔLES
+        # ==========================================================
+
+        roles = [
+            Role(name_role="écrivain"),
+            Role(name_role="auteur"),
+            Role(name_role="journaliste"),
+            Role(name_role="scénariste"),
+            Role(name_role="romancier"),
+            Role(name_role="poète"),
+            Role(name_role="peintre"),
+            Role(name_role="president"),
+            Role(name_role="vice-president"),
+            Role(name_role="ancien membre du conseil d'etat"),
+            Role(name_role="réalisateur"),
+            Role(name_role="dramaturge"),
+            Role(name_role="philosophe"),
+            Role(name_role="livre"),
+            Role(name_role="essayiste"),
+            Role(name_role="éditeur"),
+            Role(name_role="relieur"),
+            Role(name_role="traducteur"),
+            Role(name_role="personnage_principal")
+        ]
+
+        # Création des rôles en BDD
+        for role in roles:
+            self.role_dao.create(role)
+
+        # Faire correspondre le nom du rôle avec son id
+        role_ids = {}
+
+        for role in roles:
+            role_ids[role.name_role] = role.id_role
+
 
         # ==========================================================
         # 1. IDENTITIES
@@ -641,7 +681,7 @@ class DataLoader:
             {
                 "entity_name": "Minotaure",
                 "identity_name": "Albin Michel",
-                "role": "editeur"
+                "role": "éditeur"
             },
 
             # ==========================================================
@@ -656,7 +696,7 @@ class DataLoader:
             {
                 "entity_name": "Faire la peau",
                 "identity_name": "P.O.L",
-                "role": "editeur"
+                "role": "éditeur"
             },
 
             # ==========================================================
@@ -671,7 +711,7 @@ class DataLoader:
             {
                 "entity_name": "Chronique d'un royaume perdu",
                 "identity_name": "Grasset",
-                "role": "editeur"
+                "role": "éditeur"
             },
 
             # ==========================================================
@@ -686,7 +726,7 @@ class DataLoader:
             {
                 "entity_name": "Joseph dans la nuit",
                 "identity_name": "L'Iconoclaste",
-                "role": "editeur"
+                "role": "éditeur"
             },
 
             # ==========================================================
@@ -701,7 +741,7 @@ class DataLoader:
             {
                 "entity_name": "Une forêt",
                 "identity_name": "Albin Michel",
-                "role": "editeur"
+                "role": "éditeur"
             },
 
             # ==========================================================
@@ -716,7 +756,7 @@ class DataLoader:
             {
                 "entity_name": "L'inconnue du quai de Javel",
                 "identity_name": "Flammarion",
-                "role": "editeur"
+                "role": "éditeur"
             },
 
             # ==========================================================
@@ -731,7 +771,7 @@ class DataLoader:
             {
                 "entity_name": "La solitude des professeurs est infinie",
                 "identity_name": "Gallimard",
-                "role": "editeur"
+                "role": "éditeur"
             },
             {
                 "entity_name": "La solitude des professeurs est infinie",
@@ -767,7 +807,7 @@ class DataLoader:
             {
                 "entity_name": "N'efface pas mes cercles",
                 "identity_name": "Verdier",
-                "role": "editeur"
+                "role": "éditeur"
             },
             {
                 "entity_name": "N'efface pas mes cercles",
@@ -787,7 +827,7 @@ class DataLoader:
             {
                 "entity_name": "De l'autre côté du lac",
                 "identity_name": "Minuit",
-                "role": "editeur"
+                "role": "éditeur"
             },
             {
                 "entity_name": "De l'autre côté du lac",
@@ -812,7 +852,7 @@ class DataLoader:
             {
                 "entity_name": "C'était ça ou mourir",
                 "identity_name": "Grasset",
-                "role": "editeur"
+                "role": "éditeur"
             },
             {
                 "entity_name": "C'était ça ou mourir",
@@ -832,7 +872,7 @@ class DataLoader:
             {
                 "entity_name": "Le fabuleux piano",
                 "identity_name": "Robert Laffont",
-                "role": "editeur"
+                "role": "éditeur"
             },
 
             # ==========================================================
@@ -847,7 +887,7 @@ class DataLoader:
             {
                 "entity_name": "Choses que je croyais perdues",
                 "identity_name": "Gallimard",
-                "role": "editeur"
+                "role": "éditeur"
             },
             {
                 "entity_name": "Choses que je croyais perdues",
@@ -877,7 +917,7 @@ class DataLoader:
             {
                 "entity_name": "Bataille au procès",
                 "identity_name": "Maurice Nadeau",
-                "role": "editeur"
+                "role": "éditeur"
             },
             {
                 "entity_name": "Bataille au procès",
@@ -902,7 +942,7 @@ class DataLoader:
             {
                 "entity_name": "La guerre éternelle : souvenirs de Troie",
                 "identity_name": "Gallimard",
-                "role": "editeur"
+                "role": "éditeur"
             },
 
             # ==========================================================
@@ -917,7 +957,7 @@ class DataLoader:
             {
                 "entity_name": "Je",
                 "identity_name": "Gallimard",
-                "role": "editeur"
+                "role": "éditeur"
             },
 
             # ==========================================================
@@ -932,7 +972,7 @@ class DataLoader:
             {
                 "entity_name": "Nous aussi",
                 "identity_name": "Actes Sud",
-                "role": "editeur"
+                "role": "éditeur"
             }
         ]
 
@@ -959,9 +999,7 @@ class DataLoader:
             identity = None
             entity = None
 
-            # ------------------------------------------------------
             # Recherche de l'Identity correspondante
-            # ------------------------------------------------------
 
             for current_identity in identities:
                 # reconstitue le nom parfois qui se trouve dans 2 variables parfois une seule dans identity
@@ -980,37 +1018,35 @@ class DataLoader:
                 if identity_name == relation["identity_name"]:
                     identity = current_identity
 
-            # ------------------------------------------------------
             # Recherche de l'Entity correspondante
-            # ------------------------------------------------------
 
             for current_entity in entities:
 
                 if current_entity.name == relation["entity_name"]:
                     entity = current_entity
 
-            # ------------------------------------------------------
             # Vérification
-            # ------------------------------------------------------
 
             if identity is not None and entity is not None:
 
-                # ------------------------------------------------------
-                # Création de l'objet IdentityEntity
-                # ------------------------------------------------------
+                # Recherche de l'id du rôle
 
-                identity_entity = IdentityEntity(
-                    fk_id_entity=entity.id_entity,
-                    fk_id_identity=identity.id_identity,
-                    role_id_identity=relation["role"]
-                )
+                role_id = role_ids.get(relation["role"])
 
-                # ------------------------------------------------------
-                # Insertion dans la BDD
-                # ------------------------------------------------------
+                if role_id is not None:
 
-                self.identity_entity_dao.create(identity_entity)
+                    identity_entity = IdentityEntity(
+                        fk_id_entity=entity.id_entity,
+                        fk_id_identity=identity.id_identity,
+                        fk_id_role=role_id
+                    )
+                    # Insertion dans la BDD
+                    self.identity_entity_dao.create(identity_entity)
 
+                else:
+                    print(
+                        f"Rôle introuvable : {relation['role']}"
+                    )
             else:
 
                 if identity is None:

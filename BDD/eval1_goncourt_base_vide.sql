@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost
--- Généré le : mar. 15 sep. 2026 à 14:42
+-- Généré le : mer. 16 sep. 2026 à 10:52
 -- Version du serveur : 11.7.1-MariaDB
 -- Version de PHP : 8.5.4
 
@@ -31,8 +31,8 @@ CREATE TABLE `ballot` (
   `id_ballot` bigint(20) NOT NULL,
   `fk_id_election` smallint(5) UNSIGNED NOT NULL,
   `date_ballot` date NOT NULL,
-  `fk_id_entity_who_choose` bigint(20) NOT NULL,
-  `fk_id_entity_chosen` bigint(20) NOT NULL
+  `fk_id_entity_who_choose` bigint(20) UNSIGNED NOT NULL,
+  `fk_id_entity_chosen` bigint(20) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- --------------------------------------------------------
@@ -49,7 +49,7 @@ CREATE TABLE `election` (
   `date_election` date NOT NULL,
   `degree_election` varchar(50) NOT NULL,
   `done` tinyint(1) NOT NULL,
-  `fk_id_winner` bigint(20) DEFAULT NULL,
+  `fk_id_winner` bigint(20) UNSIGNED DEFAULT NULL,
   `final` tinyint(1) NOT NULL,
   `modality` varchar(50) DEFAULT NULL,
   `fk_id_election_mother` smallint(5) UNSIGNED DEFAULT NULL
@@ -62,7 +62,7 @@ CREATE TABLE `election` (
 --
 
 CREATE TABLE `entity` (
-  `id_entity` bigint(20) NOT NULL,
+  `id_entity` bigint(20) UNSIGNED NOT NULL,
   `ISBN` bigint(20) DEFAULT NULL,
   `price` decimal(15,2) DEFAULT NULL,
   `name` varchar(50) NOT NULL,
@@ -72,7 +72,7 @@ CREATE TABLE `entity` (
   `creation_date` date NOT NULL,
   `nb` decimal(15,2) NOT NULL,
   `unit_nb` varchar(10) NOT NULL,
-  `fk_id_entity_mother` bigint(20) DEFAULT NULL
+  `fk_id_entity_mother` bigint(20) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- --------------------------------------------------------
@@ -82,7 +82,7 @@ CREATE TABLE `entity` (
 --
 
 CREATE TABLE `entity_election` (
-  `fk_id_entity` bigint(20) NOT NULL,
+  `fk_id_entity` bigint(20) UNSIGNED NOT NULL,
   `fk_id_election` smallint(5) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
@@ -94,7 +94,7 @@ CREATE TABLE `entity_election` (
 
 CREATE TABLE `entity_jury` (
   `fk_id_jury` int(11) NOT NULL,
-  `fk_id_entity` bigint(20) NOT NULL
+  `fk_id_entity` bigint(20) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- --------------------------------------------------------
@@ -119,9 +119,9 @@ CREATE TABLE `identity` (
 --
 
 CREATE TABLE `identity_entity` (
-  `fk_id_entity` bigint(20) NOT NULL,
+  `fk_id_entity` bigint(20) UNSIGNED NOT NULL,
   `fk_id_identity` bigint(20) UNSIGNED NOT NULL,
-  `role_id_identity` varchar(50) NOT NULL
+  `fk_id_role` smallint(6) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- --------------------------------------------------------
@@ -134,9 +134,20 @@ CREATE TABLE `jury` (
   `id_jury` int(11) NOT NULL,
   `date_begin` date NOT NULL,
   `date_end` date DEFAULT NULL,
-  `fk_id_entity_president` bigint(20) DEFAULT NULL,
+  `fk_id_entity_president` bigint(20) UNSIGNED DEFAULT NULL,
   `nb_entity` smallint(6) NOT NULL,
   `fk_id_jury_mother` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `role`
+--
+
+CREATE TABLE `role` (
+  `id_role` smallint(5) UNSIGNED NOT NULL,
+  `name_role` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 --
@@ -168,8 +179,8 @@ ALTER TABLE `election`
 ALTER TABLE `entity`
   ADD PRIMARY KEY (`id_entity`),
   ADD UNIQUE KEY `ISBN` (`ISBN`),
-  ADD KEY `fk_entity_mother` (`fk_id_entity_mother`),
-  ADD KEY `idx_entity_name` (`name`);
+  ADD KEY `idx_entity_name` (`name`),
+  ADD KEY `fk_entity_mother` (`fk_id_entity_mother`);
 
 --
 -- Index pour la table `entity_election`
@@ -190,14 +201,16 @@ ALTER TABLE `entity_jury`
 --
 ALTER TABLE `identity`
   ADD PRIMARY KEY (`id_identity`),
+  ADD UNIQUE KEY `uk_identity_name` (`appelation`,`under_appelation`),
   ADD KEY `fk_identity_mother` (`fk_id_identity_mother`);
 
 --
 -- Index pour la table `identity_entity`
 --
 ALTER TABLE `identity_entity`
-  ADD PRIMARY KEY (`fk_id_entity`,`fk_id_identity`,`role_id_identity`),
-  ADD KEY `idx_identity_entity_identity` (`fk_id_identity`);
+  ADD PRIMARY KEY (`fk_id_entity`,`fk_id_identity`,`fk_id_role`),
+  ADD KEY `idx_identity_entity_identity` (`fk_id_identity`),
+  ADD KEY `fk_identity_entity_role` (`fk_id_role`);
 
 --
 -- Index pour la table `jury`
@@ -206,6 +219,53 @@ ALTER TABLE `jury`
   ADD PRIMARY KEY (`id_jury`),
   ADD KEY `fk_jury_mother` (`fk_id_jury_mother`),
   ADD KEY `fk_jury_president` (`fk_id_entity_president`);
+
+--
+-- Index pour la table `role`
+--
+ALTER TABLE `role`
+  ADD PRIMARY KEY (`id_role`),
+  ADD UNIQUE KEY `uk_role_name` (`name_role`);
+
+--
+-- AUTO_INCREMENT pour les tables déchargées
+--
+
+--
+-- AUTO_INCREMENT pour la table `ballot`
+--
+ALTER TABLE `ballot`
+  MODIFY `id_ballot` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `election`
+--
+ALTER TABLE `election`
+  MODIFY `id_election` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `entity`
+--
+ALTER TABLE `entity`
+  MODIFY `id_entity` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `identity`
+--
+ALTER TABLE `identity`
+  MODIFY `id_identity` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `jury`
+--
+ALTER TABLE `jury`
+  MODIFY `id_jury` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `role`
+--
+ALTER TABLE `role`
+  MODIFY `id_role` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- Contraintes pour les tables déchargées
@@ -258,7 +318,8 @@ ALTER TABLE `identity`
 --
 ALTER TABLE `identity_entity`
   ADD CONSTRAINT `fk_identity_entity_entity` FOREIGN KEY (`fk_id_entity`) REFERENCES `entity` (`id_entity`),
-  ADD CONSTRAINT `fk_identity_entity_identity` FOREIGN KEY (`fk_id_identity`) REFERENCES `identity` (`id_identity`);
+  ADD CONSTRAINT `fk_identity_entity_identity` FOREIGN KEY (`fk_id_identity`) REFERENCES `identity` (`id_identity`),
+  ADD CONSTRAINT `fk_identity_entity_role` FOREIGN KEY (`fk_id_role`) REFERENCES `role` (`id_role`);
 
 --
 -- Contraintes pour la table `jury`

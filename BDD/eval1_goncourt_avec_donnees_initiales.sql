@@ -191,14 +191,14 @@ INSERT INTO `identity` (`id_identity`, `appelation`, `under_appelation`, `descri
 CREATE TABLE `identity_entity` (
   `fk_id_entity` bigint(20) NOT NULL,
   `fk_id_identity` bigint(20) UNSIGNED NOT NULL,
-  `role_id_identity` varchar(50) NOT NULL
+  `fk_id_role` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 --
 -- Déchargement des données de la table `identity_entity`
 --
 
-INSERT INTO `identity_entity` (`fk_id_entity`, `fk_id_identity`, `role_id_identity`) VALUES
+INSERT INTO `identity_entity` (`fk_id_entity`, `fk_id_identity`, `fk_id_role`) VALUES
 (1, 3, 'auteur'),
 (2, 4, 'auteur'),
 (3, 5, 'auteur'),
@@ -318,7 +318,7 @@ ALTER TABLE `identity`
 -- Index pour la table `identity_entity`
 --
 ALTER TABLE `identity_entity`
-  ADD PRIMARY KEY (`fk_id_entity`,`fk_id_identity`,`role_id_identity`),
+  ADD PRIMARY KEY (`fk_id_entity`,`fk_id_identity`,`fk_id_role`),
   ADD KEY `idx_identity_entity_identity` (`fk_id_identity`);
 
 --

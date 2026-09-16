@@ -1,6 +1,7 @@
 # fichier qui permet à l'utilisateur de faire des choix numériques,
 # il joue un rôle de contrôleur, d'interaction avec l'utilisateur
 
+from business.data_loader import DataLoader
 from menu import Menu
 
 
@@ -12,7 +13,7 @@ class Application:
 
     def run(self):
         """Lance l'application et charge les données dans la BDD si la ligne est décommentée."""
-        #DataLoader().load()
+        DataLoader().load()
 
         conti = True
 

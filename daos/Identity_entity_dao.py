@@ -27,7 +27,7 @@ class IdentityEntityDao(Dao[IdentityEntity]):
                     (
                         fk_id_entity,
                         fk_id_identity,
-                        role_id_identity
+                        fk_id_role
                     )
                     VALUES (%s, %s, %s)
                 """
@@ -37,7 +37,7 @@ class IdentityEntityDao(Dao[IdentityEntity]):
                     (
                         identity_entity.fk_id_entity,
                         identity_entity.fk_id_identity,
-                        identity_entity.role_id_identity
+                        identity_entity.fk_id_role
                     )
                 )
 
@@ -54,7 +54,7 @@ class IdentityEntityDao(Dao[IdentityEntity]):
             return 0
 
     def read(self, id_entity: int, id_identity: int,
-             role_id_identity: str) -> Optional[IdentityEntity]:
+             fk_id_role: str) -> Optional[IdentityEntity]:
         """
         Renvoie une relation Identity / Entity.
 
@@ -69,11 +69,11 @@ class IdentityEntityDao(Dao[IdentityEntity]):
                     SELECT
                         fk_id_entity,
                         fk_id_identity,
-                        role_id_identity
+                        fk_id_role
                     FROM identity_entity
                     WHERE fk_id_entity = %s
                       AND fk_id_identity = %s
-                      AND role_id_identity = %s
+                      AND fk_id_role = %s
                 """
 
                 cursor.execute(
@@ -81,7 +81,7 @@ class IdentityEntityDao(Dao[IdentityEntity]):
                     (
                         id_entity,
                         id_identity,
-                        role_id_identity
+                        fk_id_role
                     )
                 )
 
@@ -91,7 +91,7 @@ class IdentityEntityDao(Dao[IdentityEntity]):
                 return IdentityEntity(
                     fk_id_entity=record["fk_id_entity"],
                     fk_id_identity=record["fk_id_identity"],
-                    role_id_identity=record["role_id_identity"]
+                    fk_id_role=record["fk_id_role"]
                 )
 
             return None
@@ -114,7 +114,7 @@ class IdentityEntityDao(Dao[IdentityEntity]):
             with Dao.connection.cursor() as cursor:
                 sql = """
                     UPDATE identity_entity
-                    SET role_id_identity = %s
+                    SET fk_id_role = %s
                     WHERE fk_id_entity = %s
                       AND fk_id_identity = %s
                 """
@@ -122,7 +122,7 @@ class IdentityEntityDao(Dao[IdentityEntity]):
                 cursor.execute(
                     sql,
                     (
-                        identity_entity.role_id_identity,
+                        identity_entity.fk_id_role,
                         identity_entity.fk_id_entity,
                         identity_entity.fk_id_identity
                     )
@@ -150,7 +150,7 @@ class IdentityEntityDao(Dao[IdentityEntity]):
                     DELETE FROM identity_entity
                     WHERE fk_id_entity = %s
                       AND fk_id_identity = %s
-                      AND role_id_identity = %s
+                      AND fk_id_role = %s
                 """
 
                 cursor.execute(
@@ -158,7 +158,7 @@ class IdentityEntityDao(Dao[IdentityEntity]):
                     (
                         identity_entity.fk_id_entity,
                         identity_entity.fk_id_identity,
-                        identity_entity.role_id_identity
+                        identity_entity.fk_id_role
                     )
                 )
 

@@ -12,4 +12,4 @@ from typing import Optional
 class IdentityEntity:
     fk_id_entity: Optional[int] = None
     fk_id_identity: Optional[int] = None
-    role_id_identity: str = ""
+    fk_id_role:  Optional[int] = None
