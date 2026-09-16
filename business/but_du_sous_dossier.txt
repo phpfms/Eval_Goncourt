@@ -1,0 +1,7 @@
+les fichiers business existe pour que application ne connaisse pas le fonctionnement de ma BDD
+par exemple creer un etudiant necessite de creer avant une personne. Application n'a pas à le savoir ni à le gérer
+
+evite d'appeler les fonction DAO (requetes sql) directement depuis le fichier application, qui deviendrait enorme
+
+méthodes presentes
+get get_by_id add update delete

@@ -4,9 +4,9 @@ from models.identity import Identity
 from models.entity import Entity
 from models.identity_entity import IdentityEntity
 
-from daos.Identity_dao import IdentityDao
-from daos.Entity_dao import EntityDao
-from daos.Identity_entity_dao import IdentityEntityDao
+from daos.identity_dao import IdentityDao
+from daos.entity_dao import EntityDao
+from daos.identity_entity_dao import IdentityEntityDao
 
 
 class DataLoader:
@@ -284,6 +284,126 @@ class DataLoader:
                 address="5 rue Malebranche 75005 Paris",
                 fk_id_identity_mother=None
             ),
+
+            # ==========================================================
+            # PERSONNAGES PRINCIPAUX
+            # ==========================================================
+
+            # BATAILLE AU PROCÈS
+
+            Identity(
+                appelation="Georges Bataille",
+                under_appelation=None,
+                description="Personnage principal appelé à témoigner au procès de Jean-Jacques Pauvert",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+            Identity(
+                appelation="Jean-Jacques Pauvert",
+                under_appelation=None,
+                description="Personnage principal poursuivi pour avoir publié les œuvres de Sade",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            # DE L'AUTRE CÔTÉ DU LAC
+
+            Identity(
+                appelation="Paola",
+                under_appelation=None,
+                description="Personnage principal photographe et artiste disparue en montagne",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            Identity(
+                appelation="Le narrateur",
+                under_appelation=None,
+                description="Personnage principal, il est le double de l'auteur. il mène l'enquête",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            # C'ÉTAIT ÇA OU MOURIR
+
+            Identity(
+                appelation="Jonas Dorléon",
+                under_appelation=None,
+                description="Personnage principal, il quitte Haïti. il mène l'enquête",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            # CHOSES QUE JE CROYAIS PERDUES
+
+            Identity(
+                appelation="Emilie",
+                under_appelation=None,
+                description="Personnage principal, narratrice, elle déménage.",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            Identity(
+                appelation="Tristan",
+                under_appelation=None,
+                description="Personnage principal, ex d'Emilie.",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            Identity(
+                appelation="Sandra",
+                under_appelation=None,
+                description="Personnage principal, amie d'Emilie.",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            # N'EFFACE PAS MES CERCLES
+
+            Identity(
+                appelation="Mia",
+                under_appelation=None,
+                description="Personnage principal, elle est le double de l'auteur. elle se replonge dans la saga familiale",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            # LA SOLITUDE DES PROFESSEURS EST INFINIE
+
+            Identity(
+                appelation="Jean Deichel",
+                under_appelation=None,
+                description="Personnage principal, protagoniste jeune agrégé de lettres et professeur de français stagiaire dans un collège de banlieue parisienne",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            Identity(
+                appelation="Anya",
+                under_appelation=None,
+                description="Personnage principal, tutrice de Jean au sein de l'établissement",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            Identity(
+                appelation="Streger",
+                under_appelation=None,
+                description="Personnage principal, principal de l'établissement",
+                address=None,
+                fk_id_identity_mother=None
+            ),
+
+            Identity(
+                appelation="Laguille",
+                under_appelation=None,
+                description="Personnage principal, adjointe du principal de l'établissement",
+                address=None,
+                fk_id_identity_mother=None
+            )
+
         ]
 
         # ==========================================================
@@ -294,7 +414,7 @@ class DataLoader:
 
             Entity(
                 ISBN=9782226511874,
-                price=0.0,
+                price=21.0,
                 name="Minotaure",
                 first_name=None,
                 type="livre",
@@ -498,13 +618,15 @@ class DataLoader:
                 nb=237,
                 unit_nb="pages",
                 fk_id_entity_mother=None
-            ),
+            )
         ]
 
         # ==========================================================
         # 3. IDENTITY_ENTITY
         # ==========================================================
 
+        # on cré une liste de de dictionnaire avec 3 clés chacun
+        # le but est ensuite de faire correspondre les valeur à des id dans mes tables identity et entity
         identity_entities = [
 
             # ==========================================================
@@ -611,6 +733,27 @@ class DataLoader:
                 "identity_name": "Gallimard",
                 "role": "editeur"
             },
+            {
+                "entity_name": "La solitude des professeurs est infinie",
+                "identity_name": "Jean Deichel",
+                "role": "personnage_principal"
+            },
+            {
+                "entity_name": "La solitude des professeurs est infinie",
+                "identity_name": "Anya",
+                "role": "personnage_principal"
+            },
+            {
+                "entity_name": "La solitude des professeurs est infinie",
+                "identity_name": "Streger",
+                "role": "personnage_principal"
+            },
+            {
+                "entity_name": "La solitude des professeurs est infinie",
+                "identity_name": "Laguille",
+                "role": "personnage_principal"
+            },
+
 
             # ==========================================================
             # N'EFFACE PAS MES CERCLES
@@ -625,6 +768,11 @@ class DataLoader:
                 "entity_name": "N'efface pas mes cercles",
                 "identity_name": "Verdier",
                 "role": "editeur"
+            },
+            {
+                "entity_name": "N'efface pas mes cercles",
+                "identity_name": "Mia",
+                "role": "personnage_principal"
             },
 
             # ==========================================================
@@ -641,6 +789,16 @@ class DataLoader:
                 "identity_name": "Minuit",
                 "role": "editeur"
             },
+            {
+                "entity_name": "De l'autre côté du lac",
+                "identity_name": "Paola",
+                "role": "personnage_principal"
+            },
+            {
+                "entity_name": "De l'autre côté du lac",
+                "identity_name": "Le narrateur",
+                "role": "personnage_principal"
+            },
 
             # ==========================================================
             # C'ÉTAIT ÇA OU MOURIR
@@ -655,6 +813,11 @@ class DataLoader:
                 "entity_name": "C'était ça ou mourir",
                 "identity_name": "Grasset",
                 "role": "editeur"
+            },
+            {
+                "entity_name": "C'était ça ou mourir",
+                "identity_name": "Jonas Dorléon",
+                "role": "personnage_principal"
             },
 
             # ==========================================================
@@ -686,6 +849,21 @@ class DataLoader:
                 "identity_name": "Gallimard",
                 "role": "editeur"
             },
+            {
+                "entity_name": "Choses que je croyais perdues",
+                "identity_name": "Emilie",
+                "role": "personnage_principal"
+            },
+            {
+                "entity_name": "Choses que je croyais perdues",
+                "identity_name": "Tristan",
+                "role": "personnage_principal"
+            },
+            {
+                "entity_name": "Choses que je croyais perdues",
+                "identity_name": "Sandra",
+                "role": "personnage_principal"
+            },
 
             # ==========================================================
             # BATAILLE AU PROCÈS
@@ -700,6 +878,16 @@ class DataLoader:
                 "entity_name": "Bataille au procès",
                 "identity_name": "Maurice Nadeau",
                 "role": "editeur"
+            },
+            {
+                "entity_name": "Bataille au procès",
+                "identity_name": "Georges Bataille",
+                "role": "personnage_principal"
+            },
+            {
+                "entity_name": "Bataille au procès",
+                "identity_name": "Jean-Jacques Pauvert",
+                "role": "personnage_principal"
             },
 
             # ==========================================================
@@ -745,7 +933,7 @@ class DataLoader:
                 "entity_name": "Nous aussi",
                 "identity_name": "Actes Sud",
                 "role": "editeur"
-            },
+            }
         ]
 
         # ==========================================================
@@ -776,7 +964,7 @@ class DataLoader:
             # ------------------------------------------------------
 
             for current_identity in identities:
-
+                # reconstitue le nom parfois qui se trouve dans 2 variables parfois une seule dans identity
                 if current_identity.under_appelation:
                     identity_name = (
                         f"{current_identity.under_appelation} "
@@ -785,9 +973,12 @@ class DataLoader:
                 else:
                     identity_name = current_identity.appelation
 
+                # fait correspondre le nom reconstitué de identity avec le nom indiqué dans la saisie des données dans
+                # la liste de dictionnaires à 3 clefs  identity_entities crée dans   # 3. IDENTITY_ENTITY
+                # relation contient le dico et ses 3 elements en cours d'etude par le for principal
+                # Si les noms correspondent, on mémorise l'objet identity trouvé.
                 if identity_name == relation["identity_name"]:
                     identity = current_identity
-                    break
 
             # ------------------------------------------------------
             # Recherche de l'Entity correspondante
@@ -797,41 +988,42 @@ class DataLoader:
 
                 if current_entity.name == relation["entity_name"]:
                     entity = current_entity
-                    break
 
             # ------------------------------------------------------
             # Vérification
             # ------------------------------------------------------
 
-            if identity is None:
-                print(
-                    f"Identité introuvable : "
-                    f"{relation['identity_name']}"
+            if identity is not None and entity is not None:
+
+                # ------------------------------------------------------
+                # Création de l'objet IdentityEntity
+                # ------------------------------------------------------
+
+                identity_entity = IdentityEntity(
+                    fk_id_entity=entity.id_entity,
+                    fk_id_identity=identity.id_identity,
+                    role_id_identity=relation["role"]
                 )
-                continue
 
-            if entity is None:
-                print(
-                    f"Entité introuvable : "
-                    f"{relation['entity_name']}"
-                )
-                continue
+                # ------------------------------------------------------
+                # Insertion dans la BDD
+                # ------------------------------------------------------
 
-            # ------------------------------------------------------
-            # Création de l'objet IdentityEntity
-            # ------------------------------------------------------
+                self.identity_entity_dao.create(identity_entity)
 
-            identity_entity = IdentityEntity(
-                fk_id_entity=entity.id_entity,
-                fk_id_identity=identity.id_identity,
-                role_id_identity=relation["role"]
-            )
+            else:
 
-            # ------------------------------------------------------
-            # Insertion dans la BDD
-            # ------------------------------------------------------
+                if identity is None:
+                    print(
+                        f"Identité introuvable : "
+                        f"{relation['identity_name']}"
+                    )
 
-            self.identity_entity_dao.create(identity_entity)
+                if entity is None:
+                    print(
+                        f"Entité introuvable : "
+                        f"{relation['entity_name']}"
+                    )
 
         print("Données initiales chargées avec succès.")
 

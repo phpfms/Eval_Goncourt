@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost
--- Généré le : mar. 15 sep. 2026 à 17:05
+-- Généré le : mer. 16 sep. 2026 à 08:40
 -- Version du serveur : 11.7.1-MariaDB
 -- Version de PHP : 8.5.4
 
@@ -80,7 +80,7 @@ CREATE TABLE `entity` (
 --
 
 INSERT INTO `entity` (`id_entity`, `ISBN`, `price`, `name`, `first_name`, `type`, `resume`, `creation_date`, `nb`, `unit_nb`, `fk_id_entity_mother`) VALUES
-(1, 9782226511874, 0.00, 'Minotaure', NULL, 'livre', 'A 23 ans, l\'auteur s\'apprête à surprendre son père, qu\'il n\'a jamais rencontré, dans son cabinet de psychiatre. Cette rencontre survient après une quête de ce père disparu depuis sa naissance. Un récit littéraire autobiographique en hommage à la mère.', '2026-08-19', 242.00, 'pages', NULL),
+(1, 9782226511874, 21.00, 'Minotaure', NULL, 'livre', 'A 23 ans, l\'auteur s\'apprête à surprendre son père, qu\'il n\'a jamais rencontré, dans son cabinet de psychiatre. Cette rencontre survient après une quête de ce père disparu depuis sa naissance. Un récit littéraire autobiographique en hommage à la mère.', '2026-08-19', 242.00, 'pages', NULL),
 (2, 9782818063583, 21.00, 'Faire la peau', NULL, 'livre', 'Je dis que l\'une des plus tenaces fictions tient tout entière dans ce mot, mère. Que la haine qui circule entre les mères et leurs filles est sauvage, et qu\'il faut la regarder droit dans les yeux.', '2026-08-20', 286.00, 'pages', NULL),
 (3, 9782246846949, 24.00, 'Chronique d\'un royaume perdu', NULL, 'livre', 'Au Bouchon, petit village isolé de l’île Maurice, quatre générations se succèdent depuis le temps de l’esclavage. La violence se mêle à l’amour, la tendresse à la haine, les plus nobles passions aux vices les plus vils, les sangs des unes aux sangs des autres… Les cinq fondateurs viennent d’une plantation lointaine  : trois sont nés dans la puissante et blanche famille Dumontais  ; deux d’une esclave noire. Mais les trois blancs sont en vérité le fruit d’une passion entre Madame et le Vieux Bouc, un esclave magnétique qui revendique aussi la paternité des deux derniers. Bannis pour s’être liés d’amour et d’amitié, les cinq enfants devenus grands trouvent refuge dans ce lieu perdu dont ils font leur royaume, autarcique et magique, qu’ils défendent d’un seul corps, puisqu’ici sont abolies les frontières entre passé, présent et avenir  ; vie et mort  ; réel et fantastique. Tel homme entend sans le vouloir tous les péchés humains  ; telle femme meurt et renait en déesse protectrice  ; un enfant vit parmi les oiseaux quand son cousin viole et tue sans frein  ; le moulin est hanté par les voix des fantômes, la nature donne les plus beaux fruits mais décapite la chapelle  ; les guerres du monde contemporain rencontrent les combats intérieurs de chaque individu et l’histoire de l’humanité se reproduit dans l’infiniment petit de leurs existences débridées. Parmi eux, un enfant timide sera le chroniqueur de ce royaume hors-norme dont il livre les jours de paix, de luttes, et les nuits de folie pour empêcher l’oubli. Épopée fabuleuse,  mythologie vibrante, fable majestueuse, cette Chronique d’un Royaume perdu est le chef d’œuvre d’Ananda Devi.', '2026-08-19', 454.00, 'pages', NULL),
 (4, 9782378805975, 19.90, 'Joseph dans la nuit', NULL, 'livre', 'Voyageur épris d\'ailleurs, de stop et de liberté, Olivier est en route vers Lahore pour fêter la nouvelle année sur une plage indienne. En traversant l\'Iran, il est arrêté à Chiraz alors qu\'explose le mouvement Femme, Vie, Liberté. Accusé d\'espionnage, il reste deux ans et demi en prison. Olivier est un poète, habitué à vivre de peu, sans confort ni téléphone portable. En cellule, il mobilise tout ce qui peut lui apporter de la lumière, la poésie persane comme les chansons de Britney Spears. Derrière ses paupières, installé dans un cinéma dont il est le seul spectateur, il se projette des films. La nuit, il convoque dans ses rêves les êtres aimés. Un récit lumineux et bouleversant qui nous dit que, même dans la nuit, quelque chose en nous refusera toujours de céder. La découverte d\'un écrivain.', '2026-08-20', 256.00, 'pages', NULL),
@@ -167,7 +167,20 @@ INSERT INTO `identity` (`id_identity`, `appelation`, `under_appelation`, `descri
 (26, 'Flammarion', NULL, 'Maison d\'édition française publiant notamment de la littérature, des essais et des documents.', '82 rue Saint-Lazare 75009 Paris', NULL),
 (27, 'Verdier', NULL, 'Maison d\'édition française indépendante.', '11220 Lagrasse', NULL),
 (28, 'Minuit', NULL, 'Maison d\'édition française connue notamment pour sa littérature contemporaine.', '7 rue Bernard-Palissy 75006 Paris', NULL),
-(29, 'Maurice Nadeau', NULL, 'Maison d\'édition française indépendante fondée par Maurice Nadeau.', '5 rue Malebranche 75005 Paris', NULL);
+(29, 'Maurice Nadeau', NULL, 'Maison d\'édition française indépendante fondée par Maurice Nadeau.', '5 rue Malebranche 75005 Paris', NULL),
+(30, 'Georges Bataille', NULL, 'Personnage principal appelé à témoigner au procès de Jean-Jacques Pauvert', NULL, NULL),
+(31, 'Jean-Jacques Pauvert', NULL, 'Personnage principal poursuivi pour avoir publié les œuvres de Sade', NULL, NULL),
+(32, 'Paola', NULL, 'Personnage principal photographe et artiste disparue en montagne', NULL, NULL),
+(33, 'Le narrateur', NULL, 'Personnage principal, il est le double de l\'auteur. il mène l\'enquête', NULL, NULL),
+(34, 'Jonas Dorléon', NULL, 'Personnage principal, il quitte Haïti. il mène l\'enquête', NULL, NULL),
+(35, 'Emilie', NULL, 'Personnage principal, narratrice, elle déménage.', NULL, NULL),
+(36, 'Tristan', NULL, 'Personnage principal, ex d\'Emilie.', NULL, NULL),
+(37, 'Sandra', NULL, 'Personnage principal, amie d\'Emilie.', NULL, NULL),
+(38, 'Mia', NULL, 'Personnage principal, elle est le double de l\'auteur. elle se replonge dans la saga familiale', NULL, NULL),
+(39, 'Jean Deichel', NULL, 'Personnage principal, protagoniste jeune agrégé de lettres et professeur de français stagiaire dans un collège de banlieue parisienne', NULL, NULL),
+(40, 'Anya', NULL, 'Personnage principal, tutrice de Jean au sein de l\'établissement', NULL, NULL),
+(41, 'Streger', NULL, 'Personnage principal, principal de l\'établissement', NULL, NULL),
+(42, 'Laguille', NULL, 'Personnage principal, adjointe du principal de l\'établissement', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -217,7 +230,20 @@ INSERT INTO `identity_entity` (`fk_id_entity`, `fk_id_identity`, `role_id_identi
 (6, 26, 'editeur'),
 (8, 27, 'editeur'),
 (9, 28, 'editeur'),
-(13, 29, 'editeur');
+(13, 29, 'editeur'),
+(13, 30, 'personnage_principal'),
+(13, 31, 'personnage_principal'),
+(9, 32, 'personnage_principal'),
+(9, 33, 'personnage_principal'),
+(10, 34, 'personnage_principal'),
+(12, 35, 'personnage_principal'),
+(12, 36, 'personnage_principal'),
+(12, 37, 'personnage_principal'),
+(8, 38, 'personnage_principal'),
+(7, 39, 'personnage_principal'),
+(7, 40, 'personnage_principal'),
+(7, 41, 'personnage_principal'),
+(7, 42, 'personnage_principal');
 
 -- --------------------------------------------------------
 
@@ -285,6 +311,7 @@ ALTER TABLE `entity_jury`
 --
 ALTER TABLE `identity`
   ADD PRIMARY KEY (`id_identity`),
+  ADD UNIQUE KEY `uk_identity_name` (`appelation`,`under_appelation`),
   ADD KEY `fk_identity_mother` (`fk_id_identity_mother`);
 
 --
@@ -328,7 +355,7 @@ ALTER TABLE `entity`
 -- AUTO_INCREMENT pour la table `identity`
 --
 ALTER TABLE `identity`
-  MODIFY `id_identity` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id_identity` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT pour la table `jury`

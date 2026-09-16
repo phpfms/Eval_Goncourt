@@ -1,0 +1,20 @@
+DELETE FROM ballot;
+DELETE FROM entity_election;
+DELETE FROM entity_jury;
+DELETE FROM identity_entity;
+DELETE FROM election;
+DELETE FROM jury;
+DELETE FROM entity;
+DELETE FROM identity;
+
+ALTER TABLE ballot AUTO_INCREMENT = 1;
+ALTER TABLE election AUTO_INCREMENT = 1;
+ALTER TABLE entity AUTO_INCREMENT = 1;
+ALTER TABLE jury AUTO_INCREMENT = 1;
+ALTER TABLE identity AUTO_INCREMENT = 1;
+
+ALTER TABLE identity
+ADD UNIQUE KEY uk_identity_name (
+    appelation,
+    under_appelation
+);

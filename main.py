@@ -5,7 +5,7 @@
 Application de gestion de votes
 """
 
-from Application import Application
+from application import Application
 
 
 def main() -> None:
