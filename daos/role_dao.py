@@ -97,3 +97,31 @@ class RoleDao(Dao[Role]):
             Dao.connection.rollback()
             print(f"Erreur lors de la suppression du rôle : {error}")
             return False
+
+    def read_all(self) -> list[Role]:
+        """Retourne tous les rôles."""
+
+        try:
+            with Dao.connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT id_role, name_role
+                    FROM role
+                    ORDER BY name_role
+                    """
+                )
+
+                records = cursor.fetchall()
+
+            roles = []
+
+            for record in records:
+                role = Role(record["name_role"])
+                role.id_role = record["id_role"]
+                roles.append(role)
+
+            return roles
+
+        except Exception as error:
+            print(f"Erreur lors de la lecture des rôles : {error}")
+            return []

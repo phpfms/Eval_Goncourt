@@ -32,7 +32,7 @@ class IdentityBusiness:
         Retourne l'identifiant créé ou 0 en cas d'erreur.
         """
 
-        if not self._validate_identity(identity):
+        if not self.validate_identity(identity):
             return 0
 
         if self.dao.exists(
@@ -89,7 +89,7 @@ class IdentityBusiness:
             print("Erreur : l'identifiant de l'identité est invalide.")
             return False
 
-        if not self._validate_identity(identity):
+        if not self.validate_identity(identity):
             return False
 
         if self.dao.read(identity.id_identity) is None:
@@ -158,7 +158,7 @@ class IdentityBusiness:
 
         return self.dao.count_usages_identity(id_identity)
 
-    def _validate_identity(self, identity: Identity) -> bool:
+    def validate_identity(self, identity: Identity) -> bool:
         """
         Nettoie et valide les données d'une identité.
 
