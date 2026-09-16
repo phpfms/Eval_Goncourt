@@ -159,12 +159,7 @@ class IdentityBusiness:
         return self.dao.count_usages_identity(id_identity)
 
     def validate_identity(self, identity: Identity) -> bool:
-        """
-        Nettoie et valide les données d'une identité.
-
-        :param identity: identité à vérifier
-        :return: True si les données sont valides, False sinon
-        """
+        """Nettoie et valide les données d'une identité."""
 
         if identity is None:
             print("Erreur : aucune identité n'a été fournie.")
@@ -181,10 +176,7 @@ class IdentityBusiness:
             return False
 
         if len(identity.appelation) > 100:
-            print(
-                "Erreur : l'appellation ne peut pas dépasser "
-                "100 caractères."
-            )
+            print("Erreur : l'appellation ne peut pas dépasser 100 caractères.")
             return False
 
         if identity.under_appelation is not None:
@@ -193,15 +185,15 @@ class IdentityBusiness:
             if identity.under_appelation == "":
                 identity.under_appelation = None
 
-        if (
-                identity.under_appelation is not None
-                and len(identity.under_appelation) > 80
-        ):
-            print(
-                "Erreur : le sous-nom ne peut pas dépasser "
-                "80 caractères."
-            )
+        if identity.under_appelation is not None and len(identity.under_appelation) > 80:
+            print("Erreur : la sous-appellation ne peut pas dépasser 80 caractères.")
             return False
+
+        if identity.description is not None:
+            identity.description = identity.description.strip()
+
+            if identity.description == "":
+                identity.description = None
 
         if identity.address is not None:
             identity.address = identity.address.strip()
@@ -210,10 +202,7 @@ class IdentityBusiness:
                 identity.address = None
 
         if identity.address is not None and len(identity.address) > 100:
-            print(
-                "Erreur : l'adresse ne peut pas dépasser "
-                "100 caractères."
-            )
+            print("Erreur : l'adresse ne peut pas dépasser 100 caractères.")
             return False
 
         return True
@@ -230,3 +219,38 @@ class IdentityBusiness:
             return []
 
         return self.dao.find_by_name(name)
+
+    def add_role(self, id_identity: int, id_role: int) -> bool:
+        """Affecte un rôle à une identité."""
+        return self.dao.add_role(id_identity, id_role)
+
+    def find_by_role(self, id_role: int) -> list[Identity]:
+        """Retourne les identités possédant un rôle."""
+
+        if id_role is None or id_role <= 0:
+            return []
+
+        return self.dao.find_by_role(id_role)
+
+    def add_entity(
+            self,
+            id_identity: int,
+            id_entity: int,
+            id_role: int
+    ) -> bool:
+        """Associe une identité à une entité avec un rôle."""
+
+        if id_identity is None or id_identity <= 0:
+            return False
+
+        if id_entity is None or id_entity <= 0:
+            return False
+
+        if id_role is None or id_role <= 0:
+            return False
+
+        return self.dao.add_entity(
+            id_identity,
+            id_entity,
+            id_role
+        )

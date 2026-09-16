@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost
--- Généré le : mer. 16 sep. 2026 à 18:56
+-- Généré le : mer. 16 sep. 2026 à 23:36
 -- Version du serveur : 11.7.1-MariaDB
 -- Version de PHP : 8.5.4
 
@@ -119,21 +119,46 @@ CREATE TABLE `identity` (
 --
 
 CREATE TABLE `identity_entity` (
-  `fk_id_entity` bigint(20) UNSIGNED NOT NULL,
-  `fk_id_identity` bigint(20) UNSIGNED NOT NULL,
-  `fk_id_role` smallint(6) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `identity_role`
---
-
-CREATE TABLE `identity_role` (
-  `fk_id_identity` bigint(20) UNSIGNED NOT NULL,
+  `id_identity_entity` bigint(20) UNSIGNED NOT NULL,
+  `fk_id_entity` bigint(20) UNSIGNED DEFAULT NULL,
+  `fk_id_identity` bigint(20) UNSIGNED DEFAULT NULL,
   `fk_id_role` smallint(5) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ;
+
+--
+-- Déclencheurs `identity_entity`
+--
+DELIMITER $$
+CREATE TRIGGER `before_identity_entity_insert` BEFORE INSERT ON `identity_entity` FOR EACH ROW BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM identity_entity
+        WHERE fk_id_entity <=> NEW.fk_id_entity
+          AND fk_id_identity <=> NEW.fk_id_identity
+          AND fk_id_role = NEW.fk_id_role
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cette relation identity/entity/role existe déjà.';
+    END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `before_identity_entity_update` BEFORE UPDATE ON `identity_entity` FOR EACH ROW BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM identity_entity
+        WHERE fk_id_entity <=> NEW.fk_id_entity
+          AND fk_id_identity <=> NEW.fk_id_identity
+          AND fk_id_role = NEW.fk_id_role
+          AND id_identity_entity <> NEW.id_identity_entity
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cette relation identity/entity/role existe déjà.';
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -219,16 +244,10 @@ ALTER TABLE `identity`
 -- Index pour la table `identity_entity`
 --
 ALTER TABLE `identity_entity`
-  ADD PRIMARY KEY (`fk_id_entity`,`fk_id_identity`,`fk_id_role`),
+  ADD PRIMARY KEY (`id_identity_entity`),
+  ADD KEY `idx_identity_entity_entity` (`fk_id_entity`),
   ADD KEY `idx_identity_entity_identity` (`fk_id_identity`),
-  ADD KEY `fk_identity_entity_role` (`fk_id_role`);
-
---
--- Index pour la table `identity_role`
---
-ALTER TABLE `identity_role`
-  ADD PRIMARY KEY (`fk_id_identity`,`fk_id_role`),
-  ADD KEY `fk_identity_role_role` (`fk_id_role`);
+  ADD KEY `idx_identity_entity_role` (`fk_id_role`);
 
 --
 -- Index pour la table `jury`
@@ -272,6 +291,12 @@ ALTER TABLE `entity`
 --
 ALTER TABLE `identity`
   MODIFY `id_identity` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `identity_entity`
+--
+ALTER TABLE `identity_entity`
+  MODIFY `id_identity_entity` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT pour la table `jury`
@@ -335,16 +360,9 @@ ALTER TABLE `identity`
 -- Contraintes pour la table `identity_entity`
 --
 ALTER TABLE `identity_entity`
-  ADD CONSTRAINT `fk_identity_entity_entity` FOREIGN KEY (`fk_id_entity`) REFERENCES `entity` (`id_entity`),
-  ADD CONSTRAINT `fk_identity_entity_identity` FOREIGN KEY (`fk_id_identity`) REFERENCES `identity` (`id_identity`),
-  ADD CONSTRAINT `fk_identity_entity_role` FOREIGN KEY (`fk_id_role`) REFERENCES `role` (`id_role`);
-
---
--- Contraintes pour la table `identity_role`
---
-ALTER TABLE `identity_role`
-  ADD CONSTRAINT `fk_identity_role_identity` FOREIGN KEY (`fk_id_identity`) REFERENCES `identity` (`id_identity`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_identity_role_role` FOREIGN KEY (`fk_id_role`) REFERENCES `role` (`id_role`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_ie_entity` FOREIGN KEY (`fk_id_entity`) REFERENCES `entity` (`id_entity`),
+  ADD CONSTRAINT `fk_ie_identity` FOREIGN KEY (`fk_id_identity`) REFERENCES `identity` (`id_identity`),
+  ADD CONSTRAINT `fk_ie_role` FOREIGN KEY (`fk_id_role`) REFERENCES `role` (`id_role`);
 
 --
 -- Contraintes pour la table `jury`

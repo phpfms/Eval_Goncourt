@@ -225,12 +225,6 @@ class EntityDao(Dao[Entity]):
                             FROM entity_election
                             WHERE fk_id_entity = %s
                         )
-                        +
-                        (
-                            SELECT COUNT(*)
-                            FROM entity_jury
-                            WHERE fk_id_entity = %s
-                        ) AS nb_utilisations
                     """,
                     (id_entity, id_entity, id_entity)
                 )

@@ -202,25 +202,33 @@ class IdentityDao(Dao[Identity]):
 
     def count_usages_identity(self, id_identity: int) -> int:
         """
-        Compte le nombre d'Entity utilisant cette identité.
+        Compte le nombre d'utilisations de l'identité.
         """
         try:
             with Dao.connection.cursor() as cursor:
                 cursor.execute(
                     """
-                    SELECT COUNT(*) AS nb_utilisations
-                    FROM identity_entity
-                    WHERE fk_id_identity = %s
+                    SELECT
+                        (
+                            SELECT COUNT(*)
+                            FROM identity_entity
+                            WHERE fk_id_identity = %s
+                        )
+                        +
+                        (
+                            SELECT COUNT(*)
+                            FROM identity_jury
+                            WHERE fk_id_identity = %s
+                        )
+                        AS nb_utilisations
                     """,
-                    (id_identity,)
+                    (id_identity, id_identity)
                 )
 
                 return cursor.fetchone()["nb_utilisations"]
 
         except Exception as error:
-            print(
-                f"Erreur lors du comptage des utilisations de l'identité : {error}"
-            )
+            print(f"Erreur lors du comptage des utilisations de l'identité : {error}")
             return -1
 
     def exists(
@@ -338,3 +346,112 @@ class IdentityDao(Dao[Identity]):
                 f"Erreur lors de la recherche de l'identité : {error}"
             )
             return []
+
+    def add_role(self, id_identity: int, id_role: int) -> bool:
+        """Affecte un rôle à une identité."""
+
+        try:
+            with Dao.connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    INSERT INTO identity_role
+                    (
+                        fk_id_identity,
+                        fk_id_role
+                    )
+                    VALUES (%s, %s)
+                    """,
+                    (id_identity, id_role)
+                )
+
+            Dao.connection.commit()
+            return True
+
+        except Exception as error:
+            Dao.connection.rollback()
+            print(f"Erreur lors de l'affectation du rôle : {error}")
+            return False
+
+    def find_by_role(self, id_role: int) -> list[Identity]:
+        """Retourne les identités possédant un rôle."""
+
+        try:
+            with Dao.connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT i.id_identity,
+                           i.appelation,
+                           i.under_appelation,
+                           i.description,
+                           i.address,
+                           i.fk_id_identity_mother
+                    FROM identity i
+                    INNER JOIN identity_role ir
+                        ON ir.fk_id_identity = i.id_identity
+                    WHERE ir.fk_id_role = %s
+                    ORDER BY i.appelation
+                    """,
+                    (id_role,)
+                )
+
+                records = cursor.fetchall()
+
+            identities = []
+
+            for record in records:
+                identity = Identity(
+                    record["appelation"],
+                    record["under_appelation"],
+                    record["description"],
+                    record["address"],
+                    record["fk_id_identity_mother"]
+                )
+                identity.id_identity = record["id_identity"]
+                identities.append(identity)
+
+            return identities
+
+        except Exception as error:
+            print(
+                f"Erreur lors de la recherche des identités par rôle : "
+                f"{error}"
+            )
+            return []
+
+    def add_entity(
+            self,
+            id_identity: int,
+            id_entity: int,
+            id_role: int
+    ) -> bool:
+        """Associe une identité à une entité avec un rôle."""
+
+        try:
+            with Dao.connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    INSERT INTO identity_entity
+                    (
+                        fk_id_entity,
+                        fk_id_identity,
+                        fk_id_role
+                    )
+                    VALUES (%s, %s, %s)
+                    """,
+                    (
+                        id_entity,
+                        id_identity,
+                        id_role
+                    )
+                )
+
+            Dao.connection.commit()
+            return True
+
+        except Exception as error:
+            Dao.connection.rollback()
+            print(
+                f"Erreur lors de l'ajout de l'intervenant : "
+                f"{error}"
+            )
+            return False

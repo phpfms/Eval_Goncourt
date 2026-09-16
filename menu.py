@@ -72,6 +72,7 @@ class Menu:
         print("5. Créer un livre")
         print("6. Modifier un livre")
         print("7. Supprimer un livre")
+        print("8 - Ajouter un intervenant à un livre")
         print("0. Retour")
 
         return input("Votre choix : ")

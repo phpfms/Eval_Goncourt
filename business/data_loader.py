@@ -4,13 +4,13 @@ from models.identity import Identity
 from models.entity import Entity
 from models.identity_entity import IdentityEntity
 from models.role import Role
-from models.identity_role import IdentityRole
+
 
 from daos.role_dao import RoleDao
 from daos.identity_dao import IdentityDao
 from daos.entity_dao import EntityDao
 from daos.identity_entity_dao import IdentityEntityDao
-from daos.identity_role_dao import IdentityRoleDao
+
 
 
 class DataLoader:
@@ -33,7 +33,6 @@ class DataLoader:
         self.identity_dao = IdentityDao()
         self.entity_dao = EntityDao()
         self.identity_entity_dao = IdentityEntityDao()
-        self.identity_role_dao = IdentityRoleDao()
         self.role_dao = RoleDao()
 
     def load(self):
@@ -1289,14 +1288,14 @@ class DataLoader:
             self.entity_dao.create(entity)
 
         # ==========================================================
-        # 6. CRÉATION DES IDENTITY_ROLE
-        # ==========================================================
+        # 6. CRÉATION DES IDENTITY_ENTITY
+        # 6.1. Relations Identity + Role sans Entity
+        # ----------------------------------------------------------
 
         for relation in identity_roles:
 
             identity = None
 
-            # Recherche de l'Identity correspondante
             for current_identity in identities:
 
                 if current_identity.under_appelation:
@@ -1310,34 +1309,23 @@ class DataLoader:
                 if identity_name == relation["identity_name"]:
                     identity = current_identity
 
-            # Vérification de l'Identity
             if identity is not None:
 
-                # Vérification de l'id de l'Identity
-                if identity.id_identity is not None:
+                role_id = role_ids.get(relation["role"])
 
-                    # Recherche de l'id du rôle
-                    role_id = role_ids.get(relation["role"])
+                if role_id is not None:
 
-                    if role_id is not None:
+                    identity_entity = IdentityEntity(
+                        fk_id_entity=None,
+                        fk_id_identity=identity.id_identity,
+                        fk_id_role=role_id
+                    )
 
-                        identity_role = IdentityRole(
-                            fk_id_identity=identity.id_identity,
-                            fk_id_role=role_id
-                        )
-
-                        # Insertion dans la BDD
-                        self.identity_role_dao.create(identity_role)
-
-                    else:
-                        print(
-                            f"Rôle introuvable : {relation['role']}"
-                        )
+                    self.identity_entity_dao.create(identity_entity)
 
                 else:
                     print(
-                        f"Identité sans id : "
-                        f"{relation['identity_name']}"
+                        f"Rôle introuvable : {relation['role']}"
                     )
 
             else:
@@ -1346,19 +1334,17 @@ class DataLoader:
                     f"{relation['identity_name']}"
                 )
 
-        # ==========================================================
-        # 7. CRÉATION DES IDENTITY_ENTITY
-        # ==========================================================
+        # ----------------------------------------------------------
+        # 6.2. Relations Entity + Identity + Role
+        # ----------------------------------------------------------
 
         for relation in identity_entities:
 
             identity = None
             entity = None
 
-            # Recherche de l'Identity correspondante
-
             for current_identity in identities:
-                # reconstitue le nom parfois qui se trouve dans 2 variables parfois une seule dans identity
+
                 if current_identity.under_appelation:
                     identity_name = (
                         f"{current_identity.under_appelation} "
@@ -1367,25 +1353,15 @@ class DataLoader:
                 else:
                     identity_name = current_identity.appelation
 
-                # fait correspondre le nom reconstitué de identity avec le nom indiqué dans la saisie des données dans
-                # la liste de dictionnaires à 3 clefs  identity_entities crée dans   # 3. IDENTITY_ENTITY
-                # relation contient le dico et ses 3 elements en cours d'etude par le for principal
-                # Si les noms correspondent, on mémorise l'objet identity trouvé.
                 if identity_name == relation["identity_name"]:
                     identity = current_identity
-
-            # Recherche de l'Entity correspondante
 
             for current_entity in entities:
 
                 if current_entity.name == relation["entity_name"]:
                     entity = current_entity
 
-            # Vérification
-
             if identity is not None and entity is not None:
-
-                # Recherche de l'id du rôle
 
                 role_id = role_ids.get(relation["role"])
 
@@ -1396,13 +1372,14 @@ class DataLoader:
                         fk_id_identity=identity.id_identity,
                         fk_id_role=role_id
                     )
-                    # Insertion dans la BDD
+
                     self.identity_entity_dao.create(identity_entity)
 
                 else:
                     print(
                         f"Rôle introuvable : {relation['role']}"
                     )
+
             else:
 
                 if identity is None:

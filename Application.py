@@ -19,6 +19,7 @@ from daos.role_dao import RoleDao
 
 
 
+
 class Application:
 
     def __init__(self):
@@ -286,29 +287,6 @@ class Application:
                     if id_entity != 0:
                         print(f"Livre créé avec l'identifiant {id_entity}.")
 
-                resume = input("Résumé : ")
-                creation_date = input("Date de création au format YYYY-MM-DD (obligatoire) : ")
-                nb = input("Quantité (obligatoire): ")
-                unit_nb = input("Unité (obligatoire): ")
-
-                entity = Entity(
-                    ISBN,
-                    price,
-                    name,
-                    first_name if first_name else None,
-                    type_entity,
-                    resume if resume else None,
-                    creation_date,
-                    nb,
-                    unit_nb,
-                    None
-                )
-
-                id_entity = self.entity_business.create(entity)
-
-                if id_entity != 0:
-                    print(f"Livre créé avec l'identifiant {id_entity}.")
-
             elif choix == "6":
                 try:
                     id_entity = int(input("Identifiant du livre à modifier : "))
@@ -394,6 +372,162 @@ class Application:
                 except ValueError:
                     print("L'identifiant doit être un nombre.")
 
+
+            elif choix == "8":
+
+                try:
+
+                    id_entity = int(input("Identifiant du livre : "))
+
+                    entity = self.entity_business.read(id_entity)
+
+                    if entity is None:
+
+                        print("Livre introuvable.")
+
+                    else:
+
+                        roles = self.role_business.read_all()
+
+                        if not roles:
+
+                            print("Aucun rôle disponible.")
+
+                        else:
+
+                            print("\n===== CHOISIR LE RÔLE =====")
+
+                            for role in roles:
+                                print(
+
+                                    f"{role.id_role} - "
+
+                                    f"{role.name_role}"
+
+                                )
+
+                            id_role = int(
+
+                                input("Identifiant du rôle : ")
+
+                            )
+
+                            role_selected = None
+
+                            for role in roles:
+
+                                if role.id_role == id_role:
+                                    role_selected = role
+
+                                    break
+
+                            if role_selected is None:
+
+                                print("Rôle introuvable.")
+
+                            else:
+
+                                identities = (
+
+                                    self.identity_business
+
+                                    .find_by_role(id_role)
+
+                                )
+
+                                if not identities:
+
+                                    print(
+
+                                        "Aucune personne ne possède "
+
+                                        f"le rôle « {role_selected.name_role} »."
+
+                                    )
+
+                                else:
+
+                                    print(
+
+                                        f"\n===== PERSONNES AVEC LE RÔLE "
+
+                                        f"{role_selected.name_role.upper()} ====="
+
+                                    )
+
+                                    for identity in identities:
+                                        print(
+
+                                            f"{identity.id_identity} - "
+
+                                            f"{identity.appelation}"
+
+                                        )
+
+                                    id_identity = int(
+
+                                        input(
+
+                                            "Identifiant de la personne : "
+
+                                        )
+
+                                    )
+
+                                    identity_selected = None
+
+                                    for identity in identities:
+
+                                        if identity.id_identity == id_identity:
+                                            identity_selected = identity
+
+                                            break
+
+                                    if identity_selected is None:
+
+                                        print(
+
+                                            "Cette personne n'existe pas "
+
+                                            "ou ne possède pas ce rôle."
+
+                                        )
+
+                                    else:
+
+                                        if self.identity_business.add_entity(
+
+                                                id_identity,
+
+                                                id_entity,
+
+                                                id_role
+
+                                        ):
+
+                                            print(
+
+                                                "Intervenant ajouté au livre "
+
+                                                "avec succès."
+
+                                            )
+
+                                        else:
+
+                                            print(
+
+                                                "Impossible d'ajouter "
+
+                                                "l'intervenant."
+
+                                            )
+
+
+                except ValueError:
+
+                    print("L'identifiant doit être un nombre.")
+
             elif choix == "0":
                 print("Retour au menu principal.")
                 conti = False
@@ -453,14 +587,68 @@ class Application:
 
                 identity = Identity(
                     appelation,
-                    under_appelation,
-                    description,
-                    address,
+                    under_appelation if under_appelation else None,
+                    description if description else None,
+                    address if address else None,
                     None
                 )
                 id_identity = self.identity_business.create(identity)
                 if id_identity != 0:
-                    print( f"Identité créée avec l'identifiant {id_identity}." )
+                    print(f"Identité créée avec l'identifiant {id_identity}.")
+
+                    roles = self.role_business.read_all()
+
+                    if roles:
+                        print("\n===== FONCTION DE LA PERSONNE =====")
+
+                        for role in roles:
+                            print(f"{role.id_role} - {role.name_role}")
+
+                        role_ids = []
+
+                        try:
+                            id_role = int(input("Quelle est la fonction de cette personne ? "))
+                            role = self.role_business.read(id_role)
+
+                            if role is not None:
+                                if self.identity_business.add_role(id_identity, id_role):
+                                    role_ids.append(id_role)
+                                    print(f"Fonction '{role.name_role}' affectée.")
+
+                                while True:
+                                    answer = input("Affecter une fonction supplémentaire ? (o/n) : ")
+
+                                    if answer.lower() != "o":
+                                        break
+
+                                    for role in roles:
+                                        print(f"{role.id_role} - {role.name_role}")
+
+                                    try:
+                                        id_role = int(input("Identifiant du rôle : "))
+
+                                        if id_role in role_ids:
+                                            print("Cette fonction est déjà affectée à cette personne.")
+                                        else:
+                                            role = self.role_business.read(id_role)
+
+                                            if role is not None:
+                                                if self.identity_business.add_role(id_identity, id_role):
+                                                    role_ids.append(id_role)
+                                                    print(f"Fonction '{role.name_role}' affectée.")
+                                            else:
+                                                print("Rôle introuvable.")
+
+                                    except ValueError:
+                                        print("L'identifiant du rôle doit être un nombre.")
+
+                            else:
+                                print("Rôle introuvable.")
+
+                        except ValueError:
+                            print("L'identifiant du rôle doit être un nombre.")
+                    else:
+                        print("Aucun rôle disponible.")
 
             elif choix == "6":
                 try:
