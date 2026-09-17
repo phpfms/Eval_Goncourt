@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost
--- Généré le : mer. 16 sep. 2026 à 13:59
+-- Généré le : jeu. 17 sep. 2026 à 18:26
 -- Version du serveur : 11.7.1-MariaDB
 -- Version de PHP : 8.5.4
 
@@ -111,17 +111,6 @@ CREATE TABLE `entity_election` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `entity_jury`
---
-
-CREATE TABLE `entity_jury` (
-  `fk_id_jury` int(11) NOT NULL,
-  `fk_id_entity` bigint(20) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
-
--- --------------------------------------------------------
-
---
 -- Structure de la table `identity`
 --
 
@@ -199,115 +188,156 @@ INSERT INTO `identity` (`id_identity`, `appelation`, `under_appelation`, `descri
 --
 
 CREATE TABLE `identity_entity` (
-  `fk_id_entity` bigint(20) UNSIGNED NOT NULL,
-  `fk_id_identity` bigint(20) UNSIGNED NOT NULL,
-  `fk_id_role` smallint(6) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+  `id_identity_entity` bigint(20) UNSIGNED NOT NULL,
+  `fk_id_entity` bigint(20) UNSIGNED DEFAULT NULL,
+  `fk_id_identity` bigint(20) UNSIGNED DEFAULT NULL,
+  `fk_id_role` smallint(5) UNSIGNED NOT NULL
+) ;
 
 --
 -- Déchargement des données de la table `identity_entity`
 --
 
-INSERT INTO `identity_entity` (`fk_id_entity`, `fk_id_identity`, `fk_id_role`) VALUES
-(1, 13, 2),
-(2, 14, 2),
-(3, 15, 2),
-(4, 18, 2),
-(5, 22, 2),
-(6, 21, 2),
-(7, 19, 2),
-(8, 23, 2),
-(9, 26, 2),
-(10, 25, 2),
-(11, 16, 2),
-(12, 24, 2),
-(13, 28, 2),
-(14, 27, 2),
-(15, 20, 2),
-(16, 17, 2),
-(1, 29, 4),
-(2, 30, 4),
-(3, 31, 4),
-(4, 34, 4),
-(5, 29, 4),
-(6, 36, 4),
-(7, 35, 4),
-(8, 37, 4),
-(9, 38, 4),
-(10, 31, 4),
-(11, 32, 4),
-(12, 35, 4),
-(13, 39, 4),
-(14, 35, 4),
-(15, 35, 4),
-(16, 33, 4),
-(7, 49, 11),
-(7, 50, 11),
-(7, 51, 11),
-(7, 52, 11),
-(8, 48, 11),
-(9, 42, 11),
-(9, 43, 11),
-(10, 44, 11),
-(12, 45, 11),
-(12, 46, 11),
-(12, 47, 11),
-(13, 40, 11),
-(13, 41, 11);
+INSERT INTO `identity_entity` (`id_identity_entity`, `fk_id_entity`, `fk_id_identity`, `fk_id_role`) VALUES
+(1, NULL, 3, 6),
+(2, NULL, 3, 19),
+(3, NULL, 3, 14),
+(4, NULL, 3, 15),
+(5, NULL, 4, 6),
+(6, NULL, 4, 23),
+(7, NULL, 4, 1),
+(8, NULL, 5, 6),
+(9, NULL, 5, 13),
+(10, NULL, 5, 10),
+(11, NULL, 5, 9),
+(12, NULL, 6, 6),
+(13, NULL, 6, 9),
+(14, NULL, 7, 6),
+(15, NULL, 7, 16),
+(16, NULL, 7, 3),
+(17, NULL, 7, 14),
+(18, NULL, 7, 22),
+(19, NULL, 7, 20),
+(20, NULL, 7, 9),
+(21, NULL, 8, 6),
+(22, NULL, 8, 7),
+(23, NULL, 8, 9),
+(24, NULL, 9, 3),
+(25, NULL, 9, 12),
+(26, NULL, 9, 6),
+(27, NULL, 9, 22),
+(28, NULL, 9, 9),
+(29, NULL, 10, 6),
+(30, NULL, 10, 20),
+(31, NULL, 10, 9),
+(32, NULL, 11, 18),
+(33, NULL, 11, 12),
+(34, NULL, 11, 5),
+(35, NULL, 11, 9),
+(36, NULL, 12, 6),
+(37, NULL, 12, 9),
+(38, 1, 13, 2),
+(39, 1, 29, 4),
+(40, 2, 14, 2),
+(41, 2, 30, 4),
+(42, 3, 15, 2),
+(43, 3, 31, 4),
+(44, 4, 18, 2),
+(45, 4, 34, 4),
+(46, 5, 22, 2),
+(47, 5, 29, 4),
+(48, 6, 21, 2),
+(49, 6, 36, 4),
+(50, 7, 19, 2),
+(51, 7, 35, 4),
+(52, 7, 49, 11),
+(53, 7, 50, 11),
+(54, 7, 51, 11),
+(55, 7, 52, 11),
+(56, 8, 23, 2),
+(57, 8, 37, 4),
+(58, 8, 48, 11),
+(59, 9, 26, 2),
+(60, 9, 38, 4),
+(61, 9, 42, 11),
+(62, 9, 43, 11),
+(63, 10, 25, 2),
+(64, 10, 31, 4),
+(65, 10, 44, 11),
+(66, 11, 16, 2),
+(67, 11, 32, 4),
+(68, 12, 24, 2),
+(69, 12, 35, 4),
+(70, 12, 45, 11),
+(71, 12, 46, 11),
+(72, 12, 47, 11),
+(73, 13, 28, 2),
+(74, 13, 39, 4),
+(75, 13, 40, 11),
+(76, 13, 41, 11),
+(77, 14, 27, 2),
+(78, 14, 35, 4),
+(79, 15, 20, 2),
+(80, 15, 35, 4),
+(81, 16, 17, 2),
+(82, 16, 33, 4);
+
+--
+-- Déclencheurs `identity_entity`
+--
+DELIMITER $$
+CREATE TRIGGER `before_identity_entity_insert` BEFORE INSERT ON `identity_entity` FOR EACH ROW BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM identity_entity
+        WHERE fk_id_entity <=> NEW.fk_id_entity
+          AND fk_id_identity <=> NEW.fk_id_identity
+          AND fk_id_role = NEW.fk_id_role
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cette relation identity/entity/role existe déjà.';
+    END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `before_identity_entity_update` BEFORE UPDATE ON `identity_entity` FOR EACH ROW BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM identity_entity
+        WHERE fk_id_entity <=> NEW.fk_id_entity
+          AND fk_id_identity <=> NEW.fk_id_identity
+          AND fk_id_role = NEW.fk_id_role
+          AND id_identity_entity <> NEW.id_identity_entity
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cette relation identity/entity/role existe déjà.';
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `identity_role`
+-- Structure de la table `identity_jury`
 --
 
-CREATE TABLE `identity_role` (
-  `fk_id_identity` bigint(20) UNSIGNED NOT NULL,
-  `fk_id_role` smallint(5) UNSIGNED NOT NULL
+CREATE TABLE `identity_jury` (
+  `fk_id_jury` int(11) NOT NULL,
+  `fk_id_identity` bigint(20) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 --
--- Déchargement des données de la table `identity_role`
+-- Déchargement des données de la table `identity_jury`
 --
 
-INSERT INTO `identity_role` (`fk_id_identity`, `fk_id_role`) VALUES
-(4, 1),
-(7, 3),
-(9, 3),
-(11, 5),
-(3, 6),
-(4, 6),
-(5, 6),
-(6, 6),
-(7, 6),
-(8, 6),
-(9, 6),
-(10, 6),
-(12, 6),
-(8, 7),
-(5, 9),
-(6, 9),
-(7, 9),
-(8, 9),
-(9, 9),
-(10, 9),
-(11, 9),
-(12, 9),
-(5, 10),
-(9, 12),
-(11, 12),
-(5, 13),
-(3, 14),
-(7, 14),
-(3, 15),
-(7, 16),
-(11, 18),
-(3, 19),
-(7, 20),
-(10, 20),
-(7, 22),
-(9, 22),
-(4, 23);
+INSERT INTO `identity_jury` (`fk_id_jury`, `fk_id_identity`) VALUES
+(1, 9),
+(3, 9),
+(1, 10),
+(3, 10),
+(3, 11);
 
 -- --------------------------------------------------------
 
@@ -319,10 +349,19 @@ CREATE TABLE `jury` (
   `id_jury` int(11) NOT NULL,
   `date_begin` date NOT NULL,
   `date_end` date DEFAULT NULL,
-  `fk_id_entity_president` bigint(20) UNSIGNED DEFAULT NULL,
+  `fk_id_identity_president` bigint(20) UNSIGNED DEFAULT NULL,
   `nb_entity` smallint(6) NOT NULL,
-  `fk_id_jury_mother` int(11) DEFAULT NULL
+  `fk_id_jury_mother` int(11) DEFAULT NULL,
+  `nb_entity_mode` enum('MIN','MAX','EXACT') NOT NULL DEFAULT 'EXACT'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+--
+-- Déchargement des données de la table `jury`
+--
+
+INSERT INTO `jury` (`id_jury`, `date_begin`, `date_end`, `fk_id_identity_president`, `nb_entity`, `fk_id_jury_mother`, `nb_entity_mode`) VALUES
+(1, '2026-09-17', '2026-09-18', NULL, 2, NULL, 'EXACT'),
+(3, '1998-10-09', '1998-10-10', 11, 3, NULL, 'MAX');
 
 -- --------------------------------------------------------
 
@@ -404,13 +443,6 @@ ALTER TABLE `entity_election`
   ADD KEY `idx_entity_election_election` (`fk_id_election`);
 
 --
--- Index pour la table `entity_jury`
---
-ALTER TABLE `entity_jury`
-  ADD PRIMARY KEY (`fk_id_jury`,`fk_id_entity`),
-  ADD KEY `idx_entity_jury_entity` (`fk_id_entity`);
-
---
 -- Index pour la table `identity`
 --
 ALTER TABLE `identity`
@@ -422,16 +454,17 @@ ALTER TABLE `identity`
 -- Index pour la table `identity_entity`
 --
 ALTER TABLE `identity_entity`
-  ADD PRIMARY KEY (`fk_id_entity`,`fk_id_identity`,`fk_id_role`),
+  ADD PRIMARY KEY (`id_identity_entity`),
+  ADD KEY `idx_identity_entity_entity` (`fk_id_entity`),
   ADD KEY `idx_identity_entity_identity` (`fk_id_identity`),
-  ADD KEY `fk_identity_entity_role` (`fk_id_role`);
+  ADD KEY `idx_identity_entity_role` (`fk_id_role`);
 
 --
--- Index pour la table `identity_role`
+-- Index pour la table `identity_jury`
 --
-ALTER TABLE `identity_role`
-  ADD PRIMARY KEY (`fk_id_identity`,`fk_id_role`),
-  ADD KEY `fk_identity_role_role` (`fk_id_role`);
+ALTER TABLE `identity_jury`
+  ADD PRIMARY KEY (`fk_id_jury`,`fk_id_identity`),
+  ADD KEY `idx_identity_jury_identity` (`fk_id_identity`);
 
 --
 -- Index pour la table `jury`
@@ -439,7 +472,7 @@ ALTER TABLE `identity_role`
 ALTER TABLE `jury`
   ADD PRIMARY KEY (`id_jury`),
   ADD KEY `fk_jury_mother` (`fk_id_jury_mother`),
-  ADD KEY `fk_jury_president` (`fk_id_entity_president`);
+  ADD KEY `fk_jury_president` (`fk_id_identity_president`);
 
 --
 -- Index pour la table `role`
@@ -468,19 +501,25 @@ ALTER TABLE `election`
 -- AUTO_INCREMENT pour la table `entity`
 --
 ALTER TABLE `entity`
-  MODIFY `id_entity` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id_entity` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT pour la table `identity`
 --
 ALTER TABLE `identity`
-  MODIFY `id_identity` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `id_identity` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+
+--
+-- AUTO_INCREMENT pour la table `identity_entity`
+--
+ALTER TABLE `identity_entity`
+  MODIFY `id_identity_entity` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT pour la table `jury`
 --
 ALTER TABLE `jury`
-  MODIFY `id_jury` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_jury` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT pour la table `role`
@@ -522,13 +561,6 @@ ALTER TABLE `entity_election`
   ADD CONSTRAINT `fk_entity_election_entity` FOREIGN KEY (`fk_id_entity`) REFERENCES `entity` (`id_entity`);
 
 --
--- Contraintes pour la table `entity_jury`
---
-ALTER TABLE `entity_jury`
-  ADD CONSTRAINT `fk_entity_jury_entity` FOREIGN KEY (`fk_id_entity`) REFERENCES `entity` (`id_entity`),
-  ADD CONSTRAINT `fk_entity_jury_jury` FOREIGN KEY (`fk_id_jury`) REFERENCES `jury` (`id_jury`);
-
---
 -- Contraintes pour la table `identity`
 --
 ALTER TABLE `identity`
@@ -538,23 +570,23 @@ ALTER TABLE `identity`
 -- Contraintes pour la table `identity_entity`
 --
 ALTER TABLE `identity_entity`
-  ADD CONSTRAINT `fk_identity_entity_entity` FOREIGN KEY (`fk_id_entity`) REFERENCES `entity` (`id_entity`),
-  ADD CONSTRAINT `fk_identity_entity_identity` FOREIGN KEY (`fk_id_identity`) REFERENCES `identity` (`id_identity`),
-  ADD CONSTRAINT `fk_identity_entity_role` FOREIGN KEY (`fk_id_role`) REFERENCES `role` (`id_role`);
+  ADD CONSTRAINT `fk_ie_entity` FOREIGN KEY (`fk_id_entity`) REFERENCES `entity` (`id_entity`),
+  ADD CONSTRAINT `fk_ie_identity` FOREIGN KEY (`fk_id_identity`) REFERENCES `identity` (`id_identity`),
+  ADD CONSTRAINT `fk_ie_role` FOREIGN KEY (`fk_id_role`) REFERENCES `role` (`id_role`);
 
 --
--- Contraintes pour la table `identity_role`
+-- Contraintes pour la table `identity_jury`
 --
-ALTER TABLE `identity_role`
-  ADD CONSTRAINT `fk_identity_role_identity` FOREIGN KEY (`fk_id_identity`) REFERENCES `identity` (`id_identity`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_identity_role_role` FOREIGN KEY (`fk_id_role`) REFERENCES `role` (`id_role`) ON UPDATE CASCADE;
+ALTER TABLE `identity_jury`
+  ADD CONSTRAINT `fk_entity_jury_jury` FOREIGN KEY (`fk_id_jury`) REFERENCES `jury` (`id_jury`),
+  ADD CONSTRAINT `fk_identity_jury_identity` FOREIGN KEY (`fk_id_identity`) REFERENCES `identity` (`id_identity`);
 
 --
 -- Contraintes pour la table `jury`
 --
 ALTER TABLE `jury`
-  ADD CONSTRAINT `fk_jury_mother` FOREIGN KEY (`fk_id_jury_mother`) REFERENCES `jury` (`id_jury`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_jury_president` FOREIGN KEY (`fk_id_entity_president`) REFERENCES `entity` (`id_entity`) ON DELETE SET NULL;
+  ADD CONSTRAINT `fk_jury_identity_president` FOREIGN KEY (`fk_id_identity_president`) REFERENCES `identity` (`id_identity`),
+  ADD CONSTRAINT `fk_jury_mother` FOREIGN KEY (`fk_id_jury_mother`) REFERENCES `jury` (`id_jury`) ON DELETE SET NULL ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

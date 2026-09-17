@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost
--- Généré le : mer. 16 sep. 2026 à 23:36
+-- Généré le : jeu. 17 sep. 2026 à 18:28
 -- Version du serveur : 11.7.1-MariaDB
 -- Version de PHP : 8.5.4
 
@@ -89,17 +89,6 @@ CREATE TABLE `entity_election` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `entity_jury`
---
-
-CREATE TABLE `entity_jury` (
-  `fk_id_jury` int(11) NOT NULL,
-  `fk_id_entity` bigint(20) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
-
--- --------------------------------------------------------
-
---
 -- Structure de la table `identity`
 --
 
@@ -163,6 +152,17 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `identity_jury`
+--
+
+CREATE TABLE `identity_jury` (
+  `fk_id_jury` int(11) NOT NULL,
+  `fk_id_identity` bigint(20) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `jury`
 --
 
@@ -170,9 +170,10 @@ CREATE TABLE `jury` (
   `id_jury` int(11) NOT NULL,
   `date_begin` date NOT NULL,
   `date_end` date DEFAULT NULL,
-  `fk_id_entity_president` bigint(20) UNSIGNED DEFAULT NULL,
+  `fk_id_identity_president` bigint(20) UNSIGNED DEFAULT NULL,
   `nb_entity` smallint(6) NOT NULL,
-  `fk_id_jury_mother` int(11) DEFAULT NULL
+  `fk_id_jury_mother` int(11) DEFAULT NULL,
+  `nb_entity_mode` enum('MIN','MAX','EXACT') NOT NULL DEFAULT 'EXACT'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- --------------------------------------------------------
@@ -226,13 +227,6 @@ ALTER TABLE `entity_election`
   ADD KEY `idx_entity_election_election` (`fk_id_election`);
 
 --
--- Index pour la table `entity_jury`
---
-ALTER TABLE `entity_jury`
-  ADD PRIMARY KEY (`fk_id_jury`,`fk_id_entity`),
-  ADD KEY `idx_entity_jury_entity` (`fk_id_entity`);
-
---
 -- Index pour la table `identity`
 --
 ALTER TABLE `identity`
@@ -250,12 +244,19 @@ ALTER TABLE `identity_entity`
   ADD KEY `idx_identity_entity_role` (`fk_id_role`);
 
 --
+-- Index pour la table `identity_jury`
+--
+ALTER TABLE `identity_jury`
+  ADD PRIMARY KEY (`fk_id_jury`,`fk_id_identity`),
+  ADD KEY `idx_identity_jury_identity` (`fk_id_identity`);
+
+--
 -- Index pour la table `jury`
 --
 ALTER TABLE `jury`
   ADD PRIMARY KEY (`id_jury`),
   ADD KEY `fk_jury_mother` (`fk_id_jury_mother`),
-  ADD KEY `fk_jury_president` (`fk_id_entity_president`);
+  ADD KEY `fk_jury_president` (`fk_id_identity_president`);
 
 --
 -- Index pour la table `role`
@@ -344,13 +345,6 @@ ALTER TABLE `entity_election`
   ADD CONSTRAINT `fk_entity_election_entity` FOREIGN KEY (`fk_id_entity`) REFERENCES `entity` (`id_entity`);
 
 --
--- Contraintes pour la table `entity_jury`
---
-ALTER TABLE `entity_jury`
-  ADD CONSTRAINT `fk_entity_jury_entity` FOREIGN KEY (`fk_id_entity`) REFERENCES `entity` (`id_entity`),
-  ADD CONSTRAINT `fk_entity_jury_jury` FOREIGN KEY (`fk_id_jury`) REFERENCES `jury` (`id_jury`);
-
---
 -- Contraintes pour la table `identity`
 --
 ALTER TABLE `identity`
@@ -365,11 +359,18 @@ ALTER TABLE `identity_entity`
   ADD CONSTRAINT `fk_ie_role` FOREIGN KEY (`fk_id_role`) REFERENCES `role` (`id_role`);
 
 --
+-- Contraintes pour la table `identity_jury`
+--
+ALTER TABLE `identity_jury`
+  ADD CONSTRAINT `fk_entity_jury_jury` FOREIGN KEY (`fk_id_jury`) REFERENCES `jury` (`id_jury`),
+  ADD CONSTRAINT `fk_identity_jury_identity` FOREIGN KEY (`fk_id_identity`) REFERENCES `identity` (`id_identity`);
+
+--
 -- Contraintes pour la table `jury`
 --
 ALTER TABLE `jury`
-  ADD CONSTRAINT `fk_jury_mother` FOREIGN KEY (`fk_id_jury_mother`) REFERENCES `jury` (`id_jury`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_jury_president` FOREIGN KEY (`fk_id_entity_president`) REFERENCES `entity` (`id_entity`) ON DELETE SET NULL;
+  ADD CONSTRAINT `fk_jury_identity_president` FOREIGN KEY (`fk_id_identity_president`) REFERENCES `identity` (`id_identity`),
+  ADD CONSTRAINT `fk_jury_mother` FOREIGN KEY (`fk_id_jury_mother`) REFERENCES `jury` (`id_jury`) ON DELETE SET NULL ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

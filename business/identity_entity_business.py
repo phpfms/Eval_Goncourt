@@ -17,13 +17,61 @@ class IdentityEntityBusiness:
     dao: IdentityEntityDao
 
     def create(self, identity_entity: IdentityEntity) -> bool:
-        """Crée une relation Identity / Entity."""
+
         if identity_entity is None:
             print("Erreur : aucune relation n'a été fournie.")
             return False
 
-        if identity_entity.fk_id_entity is None and identity_entity.fk_id_identity is None:
-            print("Erreur : fk_id_entity et fk_id_identity ne peuvent pas être tous les deux NULL.")
+        if (
+                identity_entity.fk_id_entity is None
+                and identity_entity.fk_id_identity is None
+        ):
+            print(
+                "Erreur : une identité ou une entité doit être renseignée."
+            )
+            return False
+
+        if identity_entity.fk_id_identity is None:
+            print("Erreur : l'identité est obligatoire.")
+            return False
+
+        if identity_entity.fk_id_identity <= 0:
+            print("Erreur : identifiant d'identité invalide.")
+            return False
+
+        if identity_entity.fk_id_role is None:
+            print("Erreur : le rôle est obligatoire.")
+            return False
+
+        if identity_entity.fk_id_role <= 0:
+            print("Erreur : identifiant de rôle invalide.")
+            return False
+
+        if self.identity_business.read(
+                identity_entity.fk_id_identity
+        ) is None:
+            print("Erreur : l'identité n'existe pas.")
+            return False
+
+        if identity_entity.fk_id_entity is not None:
+            if self.entity_business.read(
+                    identity_entity.fk_id_entity
+            ) is None:
+                print("Erreur : l'entité n'existe pas.")
+                return False
+
+        if self.role_business.read(
+                identity_entity.fk_id_role
+        ) is None:
+            print("Erreur : le rôle n'existe pas.")
+            return False
+
+        if self.dao.read(
+                identity_entity.fk_id_entity,
+                identity_entity.fk_id_identity,
+                identity_entity.fk_id_role
+        ):
+            print("Erreur : cette relation existe déjà.")
             return False
 
         return self.dao.create(identity_entity)

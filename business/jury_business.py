@@ -16,7 +16,7 @@ class JuryBusiness:
     dao: JuryDao
     identity_business: IdentityBusiness
     identity_jury_business: IdentityJuryBusiness
-    role_dao: RoleDao
+    role_business: RoleBusiness
 
     def create(
             self,
@@ -52,7 +52,7 @@ class JuryBusiness:
                 return 0
 
         # Le rôle est nécessaire pour les membres du jury.
-        role = self.role_dao.find_by_name("membre du jury")
+        role = self.role_business.find_by_name("membre du jury")
 
         if role is None:
             print(
@@ -223,7 +223,7 @@ class JuryBusiness:
                 )
                 return False
 
-        role = self.role_dao.find_by_name("membre du jury")
+        role = self.role_business.find_by_name("membre du jury")
 
         if role is None:
             print(

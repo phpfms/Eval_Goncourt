@@ -99,40 +99,34 @@ class EntityBusiness:
 
     def delete(self, id_entity: int) -> bool:
         """Supprime une entité et ses relations Identity / Entity."""
-
         if id_entity is None or id_entity <= 0:
-            print("Erreur : identifiant invalide.")
+            print("Erreur : identifiant d'entité invalide.")
             return False
 
+        # Le Business vérifie d'abord que l'entité existe.
+        # Cela évite de demander inutilement au DAO de supprimer une ligne inexistante.
         if self.dao.read(id_entity) is None:
             print("Erreur : cette entité n'existe pas.")
             return False
 
+        # Une entité utilisée ailleurs ne doit pas être supprimée.
+        # Cette règle appartient au Business car elle correspond à une règle métier.
         nb_usages = self.dao.count_usages_entity(id_entity)
 
         if nb_usages < 0:
-            print(
-                "Erreur : impossible de vérifier "
-                "les utilisations de cette entité."
-            )
+            print("Erreur : impossible de vérifier les utilisations de cette entité.")
             return False
 
         if nb_usages > 0:
-            print(
-                f"Erreur : cette entité est encore utilisée "
-                f"par {nb_usages} élément(s)."
-            )
+            print(f"Erreur : cette entité est encore utilisée par {nb_usages} élément(s).")
             return False
 
-        # Supprime les relations avec les identités
+        # Les relations Identity / Entity doivent être supprimées avant l'entité
+        # afin de respecter les dépendances entre les tables.
         if not self.identity_entity_business.delete_by_entity(id_entity):
-            print(
-                "Erreur : impossible de supprimer les relations "
-                "Identity / Entity."
-            )
+            print("Erreur : impossible de supprimer les relations Identity / Entity.")
             return False
 
-        # Supprime ensuite l'entité
         return self.dao.delete(id_entity)
 
     def count_usages(self, id_entity: int) -> int:

@@ -17,15 +17,19 @@ from typing import Optional
 from models.identity import Identity
 from daos.identity_dao import IdentityDao
 from business.identity_entity_business import IdentityEntityBusiness
+from business.role_business import RoleBusiness
+from business.entity_business import EntityBusiness
+
 
 @dataclass
 class IdentityBusiness:
-    """
-    Classe métier permettant de gérer les identités.
-    """
+    """Classe métier permettant de gérer les identités."""
 
     dao: IdentityDao
     identity_entity_business: IdentityEntityBusiness
+    role_business: RoleBusiness
+    entity_business: EntityBusiness
+
 
     def create(self, identity: Identity) -> int:
         """
@@ -244,8 +248,34 @@ class IdentityBusiness:
         return self.dao.find_by_name(name)
 
     def add_role(self, id_identity: int, id_role: int) -> bool:
-        """Affecte un rôle à une identité."""
+        """Affecte un rôle à une identité après vérification des règles métier."""
+        if id_identity is None or id_identity <= 0:
+            print("Erreur : identifiant d'identité invalide.")
+            return False
+        if id_role is None or id_role <= 0:
+            print("Erreur : identifiant de rôle invalide.")
+            return False
+
+        # Une identité doit obligatoirement exister avant de pouvoir recevoir un rôle.
+        identity = self.dao.read(id_identity)
+        if identity is None:
+            print("Erreur : cette identité n'existe pas.")
+            return False
+
+        # Le rôle doit être validé par RoleBusiness et non directement par le DAO.
+        role = self.role_business.read(id_role)
+        if role is None:
+            print("Erreur : ce rôle n'existe pas.")
+            return False
+
+        # On vérifie la règle métier : une même identité ne doit pas recevoir
+        # deux fois le même rôle direct.
+        if self.dao.has_role(id_identity, id_role):
+            print("Erreur : ce rôle est déjà affecté à cette personne.")
+            return False
+
         return self.dao.add_role(id_identity, id_role)
+
 
     def find_by_role(self, id_role: int) -> list[Identity]:
         """Retourne les identités possédant un rôle."""
@@ -261,15 +291,37 @@ class IdentityBusiness:
             id_entity: int,
             id_role: int
     ) -> bool:
-        """Associe une identité à une entité avec un rôle."""
 
         if id_identity is None or id_identity <= 0:
+            print("Erreur : identifiant d'identité invalide.")
             return False
 
         if id_entity is None or id_entity <= 0:
+            print("Erreur : identifiant d'entité invalide.")
             return False
 
         if id_role is None or id_role <= 0:
+            print("Erreur : identifiant de rôle invalide.")
+            return False
+
+        if self.dao.read(id_identity) is None:
+            print("Erreur : l'identité n'existe pas.")
+            return False
+
+        if self.entity_business.read(id_entity) is None:
+            print("Erreur : l'entité n'existe pas.")
+            return False
+
+        if self.role_business.read(id_role) is None:
+            print("Erreur : le rôle n'existe pas.")
+            return False
+
+        if self.identity_entity_business.read(
+                id_entity,
+                id_identity,
+                id_role
+        ):
+            print("Erreur : cette relation existe déjà.")
             return False
 
         return self.dao.add_entity(
@@ -277,9 +329,3 @@ class IdentityBusiness:
             id_entity,
             id_role
         )
-
-    def find_entities_by_identity(self, id_identity: int) -> list:
-        return self.dao.find_entities_by_identity(id_identity)
-
-    def find_juries_by_identity(self, id_identity: int) -> list:
-        return self.dao.find_juries_by_identity(id_identity)

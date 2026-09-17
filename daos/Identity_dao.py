@@ -563,3 +563,22 @@ class IdentityDao(Dao[Identity]):
                 f"{error}"
             )
             return -1
+
+    def has_role(self, id_identity: int, id_role: int) -> bool:
+        """Vérifie si une identité possède directement un rôle."""
+        try:
+            with Dao.connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT 1
+                    FROM identity_entity
+                    WHERE fk_id_identity = %s
+                    AND fk_id_role = %s
+                    AND fk_id_entity IS NULL
+                    """,
+                    (id_identity, id_role)
+                )
+                return cursor.fetchone() is not None
+        except Exception as error:
+            print(f"Erreur lors de la vérification du rôle : {error}")
+            return False
