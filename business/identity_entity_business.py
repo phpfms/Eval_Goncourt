@@ -47,3 +47,10 @@ class IdentityEntityBusiness:
             return False
 
         return self.dao.delete_by_entity(id_entity)
+
+    def delete_roles_by_identity(self, id_identity: int) -> bool:
+        """Supprime les rôles directs d'une identité."""
+        if id_identity is None or id_identity <= 0:
+            print("Erreur : identifiant d'identité invalide.")
+            return False
+        return self.dao.delete_roles_by_identity(id_identity)

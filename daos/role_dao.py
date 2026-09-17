@@ -125,3 +125,40 @@ class RoleDao(Dao[Role]):
         except Exception as error:
             print(f"Erreur lors de la lecture des rôles : {error}")
             return []
+
+    def find_by_name(self, name_role: str) -> Optional[Role]:
+        """Recherche un rôle par son nom."""
+        if name_role is None:
+            return None
+
+        name_role = name_role.strip()
+
+        if name_role == "":
+            return None
+
+        try:
+            with Dao.connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT id_role, name_role
+                    FROM role
+                    WHERE name_role = %s
+                    """,
+                    (name_role,)
+                )
+
+                record = cursor.fetchone()
+
+            if not record:
+                return None
+
+            role = Role(name_role=record["name_role"])
+            role.id_role = record["id_role"]
+
+            return role
+
+        except Exception as error:
+            print(
+                f"Erreur lors de la recherche du rôle : {error}"
+            )
+            return None

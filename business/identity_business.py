@@ -16,6 +16,7 @@ from typing import Optional
 
 from models.identity import Identity
 from daos.identity_dao import IdentityDao
+from business.identity_entity_business import IdentityEntityBusiness
 
 @dataclass
 class IdentityBusiness:
@@ -24,6 +25,7 @@ class IdentityBusiness:
     """
 
     dao: IdentityDao
+    identity_entity_business: IdentityEntityBusiness
 
     def create(self, identity: Identity) -> int:
         """
@@ -111,27 +113,25 @@ class IdentityBusiness:
         return self.dao.update(identity)
 
     def delete(self, id_identity: int) -> bool:
-        """Supprime une personne si elle n'est utilisée ni dans un jury
-        ni via une entité présente dans une élection.
+        """Supprime une personne si elle n'est dans aucun jury
+        et si elle n'a plus aucune entité liée.
         """
 
         if id_identity is None or id_identity <= 0:
             print("Erreur : identifiant invalide.")
             return False
 
-        identity = self.dao.read(id_identity)
-
-        if identity is None:
+        if self.dao.read(id_identity) is None:
             print("Erreur : cette personne n'existe pas.")
             return False
 
-        # 1. Vérifie si la personne appartient à un jury
+        # Vérification des jurys
         juries = self.dao.find_juries_by_identity(id_identity)
 
         if juries:
             print(
                 "Erreur : cette personne est encore référencée "
-                "dans un ou plusieurs jurys."
+                "dans un jury."
             )
 
             for jury in juries:
@@ -142,25 +142,30 @@ class IdentityBusiness:
 
             return False
 
-        # 2. Vérifie si une entité liée est présente dans une élection
-        elections = self.dao.find_elections_by_identity(id_identity)
+        # Vérification des entités encore liées
+        nb_entities = self.dao.count_entity_usages_identity(id_identity)
 
-        if elections:
+        if nb_entities < 0:
             print(
-                "Erreur : une entité liée à cette personne "
-                "est présente dans une ou plusieurs élections."
+                "Erreur : impossible de vérifier "
+                "les entités liées à cette personne."
             )
-
-            for election in elections:
-                print(
-                    f"- Entité {election['id_entity']} : "
-                    f"{election['name']} "
-                    f"(élection {election['fk_id_election']})"
-                )
-
             return False
 
-        # 3. Suppression
+        if nb_entities > 0:
+            print(
+                "Erreur : cette personne possède encore "
+                f"{nb_entities} entité(s) liée(s)."
+            )
+            print(
+                "Supprimez d'abord les entités concernées "
+                "avant de supprimer cette personne."
+            )
+            return False
+
+        # supprime ses rôles directs avant de supprimer l'identité
+        self.identity_entity_business.delete_roles_by_identity(id_identity)
+        # Suppression de la personne
         return self.dao.delete(id_identity)
 
     def count_usages(self, id_identity: int) -> int:

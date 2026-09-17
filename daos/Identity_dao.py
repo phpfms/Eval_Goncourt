@@ -179,28 +179,16 @@ class IdentityDao(Dao[Identity]):
             return False
 
     def delete(self, id_identity: int) -> bool:
-        """Supprime une identité et ses relations Identity / Entity."""
+        """Supprime une identité."""
 
         try:
             with Dao.connection.cursor() as cursor:
-
-                # Supprime les relations avec les entités
-                cursor.execute(
-                    """
-                    DELETE FROM identity_entity
-                    WHERE fk_id_identity = %s
-                    """,
-                    (id_identity,)
-                )
-
-                # Supprime l'identité
-                cursor.execute(
-                    """
+                sql = """
                     DELETE FROM identity
                     WHERE id_identity = %s
-                    """,
-                    (id_identity,)
-                )
+                """
+
+                cursor.execute(sql, (id_identity,))
 
                 deleted = cursor.rowcount > 0
 
@@ -360,10 +348,23 @@ class IdentityDao(Dao[Identity]):
             return []
 
     def add_role(self, id_identity: int, id_role: int) -> bool:
-        """Affecte un rôle à une identité."""
-
+        """Affecte un rôle direct à une identité s'il n'existe pas."""
         try:
             with Dao.connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT 1
+                    FROM identity_entity
+                    WHERE fk_id_identity = %s
+                    AND fk_id_role = %s
+                    AND fk_id_entity IS NULL
+                    """,
+                    (id_identity, id_role)
+                )
+
+                if cursor.fetchone() is not None:
+                    return True
+
                 cursor.execute(
                     """
                     INSERT INTO identity_entity
@@ -374,11 +375,7 @@ class IdentityDao(Dao[Identity]):
                     )
                     VALUES (%s, %s, %s)
                     """,
-                    (
-                        None,
-                        id_identity,
-                        id_role
-                    )
+                    (None, id_identity, id_role)
                 )
 
             Dao.connection.commit()
@@ -542,3 +539,27 @@ class IdentityDao(Dao[Identity]):
                 f"de l'identité : {error}"
             )
             return []
+
+    def count_entity_usages_identity(self, id_identity: int) -> int:
+        """Compte les entités encore liées à une identité."""
+
+        try:
+            with Dao.connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT COUNT(*) AS nb_utilisations
+                    FROM identity_entity
+                    WHERE fk_id_identity = %s
+                    AND fk_id_entity IS NOT NULL
+                    """,
+                    (id_identity,)
+                )
+
+                return cursor.fetchone()["nb_utilisations"]
+
+        except Exception as error:
+            print(
+                "Erreur lors du comptage des entités liées à l'identité : "
+                f"{error}"
+            )
+            return -1

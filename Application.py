@@ -1,21 +1,27 @@
 # fichier qui permet à l'utilisateur de faire des choix numériques,
 # il joue un rôle de contrôleur, d'interaction avec l'utilisateur
 
-from business.data_loader import DataLoader
 from menu import Menu
 
-from business.identity_business import IdentityBusiness
 from business.entity_business import EntityBusiness
 from daos.entity_dao import EntityDao
-from daos.identity_dao import IdentityDao
 from models.identity import Identity
 from models.entity import Entity
 from displays.entity_display import DisplayEntity
 from displays.identity_display import DisplayIdentity
 from business.role_business import RoleBusiness
 from daos.role_dao import RoleDao
-from business.identity_entity_business import IdentityEntityBusiness
+from daos.identity_dao import IdentityDao
 from daos.identity_entity_dao import IdentityEntityDao
+from business.identity_business import IdentityBusiness
+from business.identity_entity_business import IdentityEntityBusiness
+from datetime import datetime
+from models.jury import Jury
+from daos.jury_dao import JuryDao
+from daos.role_dao import RoleDao
+from daos.identity_jury_dao import IdentityJuryDao
+from business.jury_business import JuryBusiness
+from business.identity_jury_business import IdentityJuryBusiness
 
 
 
@@ -27,12 +33,25 @@ class Application:
     def __init__(self):
         """Initialise l'application."""
         self.menu = Menu()
-        self.identity_business = IdentityBusiness( IdentityDao() )
+        self.identity_entity_business = IdentityEntityBusiness(IdentityEntityDao())
+        self.identity_business = IdentityBusiness(
+            IdentityDao(),
+            self.identity_entity_business
+        )
         self.identity_display = DisplayIdentity()
-        self.identity_entity_business = IdentityEntityBusiness( IdentityEntityDao() )
-        self.entity_business = EntityBusiness( EntityDao(), self.identity_entity_business )
+        self.entity_business = EntityBusiness(
+            EntityDao(),
+            self.identity_entity_business
+        )
         self.entity_display = DisplayEntity()
         self.role_business = RoleBusiness(RoleDao())
+        self.identity_jury_business = IdentityJuryBusiness(IdentityJuryDao())
+        self.jury_business = JuryBusiness(
+            JuryDao(),
+            self.identity_business,
+            self.identity_jury_business,
+            RoleDao()
+        )
 
     def run(self):
         """Lance l'application et charge les données dans la BDD si la ligne est décommentée."""
@@ -70,40 +89,28 @@ class Application:
 
     def jury_menu(self):
         """Gère le sous-menu des jurys."""
-
         conti = True
-
         while conti:
             choix = self.menu.display_jury_menu()
 
             if choix == "1":
-                print("Afficher l'historique des jurys")
-
+                self.display_jury_history()
             elif choix == "2":
-                print("Afficher la composition du jury et le nom de son président")
-
+                self.display_jury_composition()
             elif choix == "3":
-                print("Trouver un livre par id")
-
+                self.find_book_by_id()
             elif choix == "4":
-                print("Trouver un livre par nom")
-
+                self.find_book_by_name()
             elif choix == "5":
-                print("Afficher les détails d'un membre du jury")
-
+                self.display_jury_member_details()
             elif choix == "6":
-                print("Créer un jury")
-
+                self.create_jury()
             elif choix == "7":
-                print("Modifier un jury")
-
+                self.update_jury()
             elif choix == "8":
-                print("Supprimer un jury")
-
+                self.delete_jury()
             elif choix == "0":
-                print("Retour au menu principal.")
                 conti = False
-
             else:
                 print("Choix invalide.")
 

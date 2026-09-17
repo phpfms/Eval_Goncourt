@@ -158,3 +158,24 @@ class IdentityEntityDao(Dao[IdentityEntity]):
             Dao.connection.rollback()
             print(f"Erreur lors de la suppression des relations de l'entité : {error}")
             return False
+
+    def delete_roles_by_identity(self, id_identity: int) -> bool:
+        """Supprime uniquement les rôles directs d'une identité."""
+        try:
+            with Dao.connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    DELETE FROM identity_entity
+                    WHERE fk_id_identity = %s
+                    AND fk_id_entity IS NULL
+                    """,
+                    (id_identity,)
+                )
+            Dao.connection.commit()
+            return True
+        except Exception as error:
+            Dao.connection.rollback()
+            print(
+                f"Erreur lors de la suppression des rôles directs : {error}"
+            )
+            return False
