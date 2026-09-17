@@ -30,7 +30,7 @@ class Application:
         # EntityBusiness utilise IdentityEntityBusiness pour gérer les relations Identity / Entity.
         self.entity_business = EntityBusiness(EntityDao(), self.identity_entity_business)
         # IdentityBusiness utilise RoleBusiness pour les vérifications liées aux rôles.
-        self.identity_business = IdentityBusiness(IdentityDao(), self.identity_entity_business, self.role_business)
+        self.identity_business = IdentityBusiness( IdentityDao(), self.identity_entity_business, self.role_business, self.entity_business )
         self.identity_display = DisplayIdentity()
         self.entity_display = DisplayEntity()
         self.identity_jury_business = IdentityJuryBusiness(IdentityJuryDao())

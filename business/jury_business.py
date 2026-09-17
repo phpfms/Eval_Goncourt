@@ -4,9 +4,9 @@ from dataclasses import dataclass
 
 from models.jury import Jury
 from daos.jury_dao import JuryDao
-from daos.role_dao import RoleDao
 from business.identity_business import IdentityBusiness
 from business.identity_jury_business import IdentityJuryBusiness
+from business.role_business import RoleBusiness
 
 
 @dataclass
