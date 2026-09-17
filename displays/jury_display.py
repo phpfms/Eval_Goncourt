@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+from models.jury import Jury
+
 
 class DisplayJury:
 
@@ -78,6 +81,60 @@ class DisplayJury:
         """Demande l'identifiant d'un jury."""
         try:
             return int(input("Identifiant du jury : "))
+        except ValueError:
+            print("L'identifiant doit être un nombre.")
+            return 0
+
+    def input_president_name(self) -> str:
+        """Demande le nom du président."""
+        return input("Nom du président : ").strip()
+
+    def input_create(self):
+        """Saisit les informations nécessaires à la création d'un jury."""
+        try:
+            date_begin = datetime.strptime(
+                input("Date de début (AAAA-MM-JJ) : "),
+                "%Y-%m-%d"
+            ).date()
+            date_end = datetime.strptime(
+                input("Date de fin (AAAA-MM-JJ) : "),
+                "%Y-%m-%d"
+            ).date()
+            president = input(
+                "Identifiant du président (vide si aucun) : "
+            ).strip()
+            nb_entity = int(input("Nombre de membres : "))
+            nb_entity_mode = input(
+                "Mode (MIN, MAX ou EXACT) : "
+            ).strip().upper()
+
+            id_members = []
+
+            for index in range(nb_entity):
+                id_identity = int(
+                    input(f"Identifiant du membre {index + 1} : ")
+                )
+                id_members.append(id_identity)
+
+            jury = Jury(
+                date_begin=date_begin,
+                date_end=date_end,
+                fk_id_identity_president=int(president) if president else None,
+                nb_entity=nb_entity,
+                nb_entity_mode=nb_entity_mode,
+                fk_id_jury_mother=None
+            )
+
+            return jury, id_members
+
+        except ValueError:
+            print("Erreur : les données saisies sont invalides.")
+            return None, []
+
+    def input_delete(self) -> int:
+        """Demande l'identifiant du jury à supprimer."""
+        try:
+            return int(input("Identifiant du jury à supprimer : "))
         except ValueError:
             print("L'identifiant doit être un nombre.")
             return 0

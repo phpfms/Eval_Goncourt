@@ -158,8 +158,7 @@ class JuryBusiness:
         return self.dao.update(jury)
 
     def delete(self, id_jury: int) -> bool:
-        """Supprime un jury."""
-
+        """Supprime un jury s'il n'est lié à aucune élection."""
         if id_jury is None or id_jury <= 0:
             print("Erreur : identifiant de jury invalide.")
             return False
@@ -168,19 +167,19 @@ class JuryBusiness:
             print("Erreur : ce jury n'existe pas.")
             return False
 
-        nb_members = self.dao.count_members(id_jury)
+        nb_elections = self.dao.count_elections(id_jury)
 
-        if nb_members < 0:
-            print("Erreur : impossible de vérifier les membres.")
+        if nb_elections < 0:
+            print("Erreur : impossible de vérifier les élections.")
             return False
 
-        if nb_members > 0:
-            print(
-                "Erreur : ce jury possède encore des membres."
-            )
-            print(
-                "Retirez d'abord les membres du jury."
-            )
+        if nb_elections > 0:
+            print("Erreur : ce jury est lié à une élection.")
+            print("Une nouvelle élection doit être créée avec un autre jury.")
+            return False
+
+        if not self.identity_jury_business.delete_by_jury(id_jury):
+            print("Erreur lors de la suppression des membres du jury.")
             return False
 
         return self.dao.delete(id_jury)
@@ -427,3 +426,11 @@ class JuryBusiness:
         members = self.identity_jury_business.find_members_details(id_jury)
 
         return jury, members
+
+
+    def find_by_president_name(self, name: str) -> list[Jury]:
+        """Recherche les jurys par nom de président."""
+        if name is None or name.strip() == "":
+            print("Erreur : le nom du président est obligatoire.")
+            return []
+        return self.dao.find_by_president_name(name.strip())

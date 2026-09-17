@@ -22,10 +22,6 @@ from business.jury_business import JuryBusiness
 from business.identity_jury_business import IdentityJuryBusiness
 
 
-
-
-
-
 class Application:
     def __init__(self):
         """Initialise l'application."""
@@ -82,14 +78,12 @@ class Application:
     def jury_menu(self):
         """Gère le sous-menu des jurys."""
         conti = True
-
         while conti:
             choix = self.menu.display_jury_menu()
 
             if choix == "1":
                 juries = self.jury_business.read_all()
                 self.jury_display.display_history(juries)
-
 
             elif choix == "2":
                 juries = self.jury_business.read_all()
@@ -99,30 +93,28 @@ class Application:
                     jury, members = self.jury_business.get_composition(
                         self.jury_display.input_id_jury()
                     )
-                    self.jury_display.display_composition(jury, members)
+                    if jury is not None:
+                        self.jury_display.display_composition(
+                            jury,
+                            members
+                        )
 
             elif choix == "3":
-                try:
-                    id_entity = int(input("Identifiant du livre : "))
-                    entity = self.entity_business.read(id_entity)
-
-                    if entity is None:
-                        print("Livre introuvable.")
-                    else:
-                        self.entity_display.display_entity(entity)
-
-                except ValueError:
-                    print("L'identifiant doit être un nombre.")
+                id_jury = self.jury_display.input_id_jury()
+                jury = self.jury_business.read(id_jury)
+                if jury is None:
+                    print("Jury introuvable.")
+                else:
+                    self.jury_display.display(jury)
 
             elif choix == "4":
-                name = input("Nom du livre : ")
-                entities = self.entity_business.find_by_name(name)
-
-                if not entities:
-                    print("Aucun livre trouvé.")
+                name = self.jury_display.input_president_name()
+                juries = self.jury_business.find_by_president_name(name)
+                if not juries:
+                    print("Aucun jury trouvé pour ce président.")
                 else:
-                    for entity in entities:
-                        self.entity_display.display_entity(entity)
+                    for jury in juries:
+                        self.jury_display.display(jury)
 
             elif choix == "5":
                 try:
@@ -130,26 +122,34 @@ class Application:
                         input("Identifiant du membre : ")
                     )
                     identity = self.identity_business.read(id_identity)
-
                     if identity is None:
                         print("Personne introuvable.")
                     else:
                         self.identity_display.display_identity(identity)
-
                 except ValueError:
                     print("L'identifiant doit être un nombre.")
 
             elif choix == "6":
-                # Saisie uniquement ; la création est gérée par JuryBusiness.
-                pass
+                jury, id_members = self.jury_display.input_create()
+                if jury is not None:
+                    id_jury = self.jury_business.create(
+                        jury,
+                        id_members
+                    )
+                    if id_jury != 0:
+                        print(
+                            f"Jury créé avec l'identifiant {id_jury}."
+                        )
 
             elif choix == "7":
                 # Saisie uniquement ; la modification est gérée par JuryBusiness.
                 pass
 
             elif choix == "8":
-                # Saisie uniquement ; la suppression est gérée par JuryBusiness.
-                pass
+                id_jury = self.jury_display.input_delete()
+                if id_jury > 0:
+                    if self.jury_business.delete(id_jury):
+                        print("Jury supprimé avec succès.")
 
             elif choix == "0":
                 conti = False

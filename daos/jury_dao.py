@@ -217,3 +217,68 @@ class JuryDao(Dao[Jury]):
         except Exception as error:
             print(f"Erreur lors du comptage des membres : {error}")
             return -1
+
+    def find_by_president_name(self, name: str) -> list[Jury]:
+        """Retourne les jurys correspondant au nom du président."""
+        try:
+            with Dao.connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT
+                        j.id_jury,
+                        j.date_begin,
+                        j.date_end,
+                        j.fk_id_identity_president,
+                        j.nb_entity,
+                        j.nb_entity_mode,
+                        j.fk_id_jury_mother
+                    FROM jury j
+                    INNER JOIN identity i
+                        ON i.id_identity = j.fk_id_identity_president
+                    WHERE i.appelation LIKE %s
+                    ORDER BY j.id_jury
+                    """,
+                    (f"%{name}%",)
+                )
+                records = cursor.fetchall()
+
+            juries = []
+            for record in records:
+                jury = Jury(
+                    record["date_begin"],
+                    record["date_end"],
+                    record["fk_id_identity_president"],
+                    record["nb_entity"],
+                    record["nb_entity_mode"],
+                    record["fk_id_jury_mother"]
+                )
+                jury.id_jury = record["id_jury"]
+                juries.append(jury)
+
+            return juries
+
+        except Exception as error:
+            print(
+                f"Erreur lors de la recherche des jurys par président : {error}"
+            )
+            return []
+
+    def count_elections(self, id_jury: int) -> int:
+        """Compte les élections liées à un jury."""
+        try:
+            with Dao.connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT COUNT(*) AS total
+                    FROM election
+                    WHERE fk_id_jury = %s
+                    """,
+                    (id_jury,)
+                )
+                record = cursor.fetchone()
+            return record["total"] if record else 0
+        except Exception as error:
+            print(
+                f"Erreur lors du comptage des élections du jury : {error}"
+            )
+            return -1
