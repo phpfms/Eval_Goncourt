@@ -282,3 +282,35 @@ class JuryDao(Dao[Jury]):
                 f"Erreur lors du comptage des élections du jury : {error}"
             )
             return -1
+
+    def update(self, jury) -> bool:
+        """Modifie un jury en base."""
+        try:
+            with Dao.connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    UPDATE jury
+                    SET date_begin = %s,
+                        date_end = %s,
+                        fk_id_identity_president = %s,
+                        nb_entity = %s,
+                        nb_entity_mode = %s
+                    WHERE id_jury = %s
+                    """,
+                    (
+                        jury.date_begin,
+                        jury.date_end,
+                        jury.fk_id_identity_president,
+                        jury.nb_entity,
+                        jury.nb_entity_mode,
+                        jury.id_jury
+                    )
+                )
+            Dao.connection.commit()
+            return True
+        except Exception as error:
+            Dao.connection.rollback()
+            print(
+                f"Erreur lors de la modification du jury : {error}"
+            )
+            return False

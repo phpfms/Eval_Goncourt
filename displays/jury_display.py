@@ -138,3 +138,34 @@ class DisplayJury:
         except ValueError:
             print("L'identifiant doit être un nombre.")
             return 0
+
+    def input_update(self):
+        """Saisit les nouvelles informations d'un jury."""
+        try:
+            id_jury = int(input("Identifiant du jury : "))
+            date_begin = datetime.strptime(
+                input("Date de début (AAAA-MM-JJ) : "),
+                "%Y-%m-%d"
+            ).date()
+            date_end = datetime.strptime(
+                input("Date de fin (AAAA-MM-JJ) : "),
+                "%Y-%m-%d"
+            ).date()
+            president = input(
+                "Identifiant du président (vide si aucun) : "
+            ).strip()
+            nb_entity = int(input("Nombre de membres : "))
+            nb_entity_mode = input(
+                "Mode (MIN, MAX ou EXACT) : "
+            ).strip().upper()
+            return (
+                id_jury,
+                date_begin,
+                date_end,
+                int(president) if president else None,
+                nb_entity,
+                nb_entity_mode
+            )
+        except ValueError:
+            print("Erreur : les données saisies sont invalides.")
+            return None

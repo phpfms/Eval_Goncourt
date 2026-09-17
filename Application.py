@@ -141,9 +141,12 @@ class Application:
                             f"Jury créé avec l'identifiant {id_jury}."
                         )
 
+
             elif choix == "7":
-                # Saisie uniquement ; la modification est gérée par JuryBusiness.
-                pass
+                data = self.jury_display.input_update()
+                if data is not None:
+                    if self.jury_business.update(*data):
+                        print("Jury modifié avec succès.")
 
             elif choix == "8":
                 id_jury = self.jury_display.input_delete()

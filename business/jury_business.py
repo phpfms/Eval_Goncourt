@@ -434,3 +434,40 @@ class JuryBusiness:
             print("Erreur : le nom du président est obligatoire.")
             return []
         return self.dao.find_by_president_name(name.strip())
+
+    def update(
+            self,
+            id_jury: int,
+            date_begin,
+            date_end,
+            fk_id_identity_president: int | None,
+            nb_entity: int,
+            nb_entity_mode: str
+    ) -> bool:
+        """Modifie les informations d'un jury."""
+        if id_jury is None or id_jury <= 0:
+            print("Erreur : identifiant de jury invalide.")
+            return False
+        jury = self.read(id_jury)
+        if jury is None:
+            print("Erreur : ce jury n'existe pas.")
+            return False
+        if date_begin > date_end:
+            print("Erreur : la date de début doit être antérieure à la date de fin.")
+            return False
+        if nb_entity <= 0:
+            print("Erreur : le nombre de membres doit être positif.")
+            return False
+        if nb_entity_mode not in ("MIN", "MAX", "EXACT"):
+            print("Erreur : mode invalide.")
+            return False
+        if fk_id_identity_president is not None:
+            if self.identity_business.read(fk_id_identity_president) is None:
+                print("Erreur : le président n'existe pas.")
+                return False
+        jury.date_begin = date_begin
+        jury.date_end = date_end
+        jury.fk_id_identity_president = fk_id_identity_president
+        jury.nb_entity = nb_entity
+        jury.nb_entity_mode = nb_entity_mode
+        return self.dao.update(jury)
