@@ -10,15 +10,13 @@ from models.entity import Entity
 from displays.entity_display import DisplayEntity
 from displays.identity_display import DisplayIdentity
 from business.role_business import RoleBusiness
-from daos.role_dao import RoleDao
 from daos.identity_dao import IdentityDao
 from daos.identity_entity_dao import IdentityEntityDao
 from business.identity_business import IdentityBusiness
 from business.identity_entity_business import IdentityEntityBusiness
-from datetime import datetime
-from models.jury import Jury
-from daos.jury_dao import JuryDao
 from daos.role_dao import RoleDao
+from displays.jury_display import DisplayJury
+from daos.jury_dao import JuryDao
 from daos.identity_jury_dao import IdentityJuryDao
 from business.jury_business import JuryBusiness
 from business.identity_jury_business import IdentityJuryBusiness
@@ -29,20 +27,13 @@ from business.identity_jury_business import IdentityJuryBusiness
 
 
 class Application:
-
     def __init__(self):
         """Initialise l'application."""
         self.menu = Menu()
         self.identity_entity_business = IdentityEntityBusiness(IdentityEntityDao())
-        self.identity_business = IdentityBusiness(
-            IdentityDao(),
-            self.identity_entity_business
-        )
+        self.identity_business = IdentityBusiness(IdentityDao(), self.identity_entity_business)
         self.identity_display = DisplayIdentity()
-        self.entity_business = EntityBusiness(
-            EntityDao(),
-            self.identity_entity_business
-        )
+        self.entity_business = EntityBusiness(EntityDao(), self.identity_entity_business)
         self.entity_display = DisplayEntity()
         self.role_business = RoleBusiness(RoleDao())
         self.identity_jury_business = IdentityJuryBusiness(IdentityJuryDao())
@@ -52,6 +43,7 @@ class Application:
             self.identity_jury_business,
             RoleDao()
         )
+        self.jury_display = DisplayJury()
 
     def run(self):
         """Lance l'application et charge les données dans la BDD si la ligne est décommentée."""
@@ -90,27 +82,78 @@ class Application:
     def jury_menu(self):
         """Gère le sous-menu des jurys."""
         conti = True
+
         while conti:
             choix = self.menu.display_jury_menu()
 
             if choix == "1":
-                self.display_jury_history()
+                juries = self.jury_business.read_all()
+                self.jury_display.display_history(juries)
+
+
             elif choix == "2":
-                self.display_jury_composition()
+                juries = self.jury_business.read_all()
+                if not juries:
+                    print("Aucun jury trouvé.")
+                else:
+                    jury, members = self.jury_business.get_composition(
+                        self.jury_display.input_id_jury()
+                    )
+                    self.jury_display.display_composition(jury, members)
+
             elif choix == "3":
-                self.find_book_by_id()
+                try:
+                    id_entity = int(input("Identifiant du livre : "))
+                    entity = self.entity_business.read(id_entity)
+
+                    if entity is None:
+                        print("Livre introuvable.")
+                    else:
+                        self.entity_display.display_entity(entity)
+
+                except ValueError:
+                    print("L'identifiant doit être un nombre.")
+
             elif choix == "4":
-                self.find_book_by_name()
+                name = input("Nom du livre : ")
+                entities = self.entity_business.find_by_name(name)
+
+                if not entities:
+                    print("Aucun livre trouvé.")
+                else:
+                    for entity in entities:
+                        self.entity_display.display_entity(entity)
+
             elif choix == "5":
-                self.display_jury_member_details()
+                try:
+                    id_identity = int(
+                        input("Identifiant du membre : ")
+                    )
+                    identity = self.identity_business.read(id_identity)
+
+                    if identity is None:
+                        print("Personne introuvable.")
+                    else:
+                        self.identity_display.display_identity(identity)
+
+                except ValueError:
+                    print("L'identifiant doit être un nombre.")
+
             elif choix == "6":
-                self.create_jury()
+                # Saisie uniquement ; la création est gérée par JuryBusiness.
+                pass
+
             elif choix == "7":
-                self.update_jury()
+                # Saisie uniquement ; la modification est gérée par JuryBusiness.
+                pass
+
             elif choix == "8":
-                self.delete_jury()
+                # Saisie uniquement ; la suppression est gérée par JuryBusiness.
+                pass
+
             elif choix == "0":
                 conti = False
+
             else:
                 print("Choix invalide.")
 

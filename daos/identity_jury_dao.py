@@ -57,6 +57,10 @@ class IdentityJuryDao(Dao):
             )
             return False
 
+    def update(self, id_jury: int, id_identity: int) -> bool:
+        """Modifie une relation Identity / Jury."""
+        return False
+
     def delete(
             self,
             id_jury: int,
@@ -183,5 +187,30 @@ class IdentityJuryDao(Dao):
         except Exception as error:
             print(
                 f"Erreur lors de la recherche des jurys : {error}"
+            )
+            return []
+
+    def find_members_details(self, id_jury: int) -> list[dict]:
+        """Retourne les informations des membres d'un jury."""
+        try:
+            with Dao.connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT
+                        i.id_identity,
+                        i.appelation,
+                        i.under_appelation
+                    FROM identity_jury ij
+                    INNER JOIN identity i
+                        ON i.id_identity = ij.fk_id_identity
+                    WHERE ij.fk_id_jury = %s
+                    ORDER BY i.id_identity
+                    """,
+                    (id_jury,)
+                )
+                return cursor.fetchall()
+        except Exception as error:
+            print(
+                f"Erreur lors de la recherche des membres : {error}"
             )
             return []

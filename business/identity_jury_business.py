@@ -96,3 +96,16 @@ def exists(self, id_jury: int, id_identity: int) -> bool:
         return False
 
     return self.dao.read(id_jury, id_identity)
+
+def get_composition(self, id_jury: int):
+    """Retourne un jury et les informations de ses membres."""
+    jury = self.read(id_jury)
+
+    if jury is None:
+        return None, []
+
+    members = self.identity_jury_business.find_members_details(
+        id_jury
+    )
+
+    return jury, members

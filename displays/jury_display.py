@@ -57,3 +57,27 @@ class DisplayJury:
                 f"{member['appelation']} "
                 f"{member['under_appelation'] or ''}"
             )
+
+    def display_composition_input(self, jury_business):
+        """Demande un jury et affiche sa composition."""
+        try:
+            id_jury = int(input("Identifiant du jury : "))
+        except ValueError:
+            print("L'identifiant doit être un nombre.")
+            return
+
+        jury, members = jury_business.get_composition(id_jury)
+
+        if jury is None:
+            print("Erreur : ce jury n'existe pas.")
+            return
+
+        self.display_composition(jury, members)
+
+    def input_id_jury(self) -> int:
+        """Demande l'identifiant d'un jury."""
+        try:
+            return int(input("Identifiant du jury : "))
+        except ValueError:
+            print("L'identifiant doit être un nombre.")
+            return 0
