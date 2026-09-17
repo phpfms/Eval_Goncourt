@@ -14,7 +14,6 @@ et délègue les opérations SQL au EntityDao.
 from dataclasses import dataclass
 from typing import Optional
 from business.identity_entity_business import IdentityEntityBusiness
-from business.identity_entity_business import IdentityEntityBusiness
 
 from models.entity import Entity
 from daos.entity_dao import EntityDao

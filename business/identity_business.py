@@ -111,48 +111,56 @@ class IdentityBusiness:
         return self.dao.update(identity)
 
     def delete(self, id_identity: int) -> bool:
-        """
-        Supprime une identité.
-
-        :param id_identity: identifiant de l'identité
-        :return: True si la suppression est effectuée, False sinon
+        """Supprime une personne si elle n'est utilisée ni dans un jury
+        ni via une entité présente dans une élection.
         """
 
         if id_identity is None or id_identity <= 0:
             print("Erreur : identifiant invalide.")
             return False
 
-        if self.dao.read(id_identity) is None:
-            print("Erreur : cette identité n'existe pas.")
+        identity = self.dao.read(id_identity)
+
+        if identity is None:
+            print("Erreur : cette personne n'existe pas.")
             return False
 
-        # Une identité utilisée dans identity_entity ne peut pas être supprimée.
-        nb_usages = self.dao.count_usages_identity(id_identity)
+        # 1. Vérifie si la personne appartient à un jury
+        juries = self.dao.find_juries_by_identity(id_identity)
 
-        if nb_usages < 0:
+        if juries:
             print(
-                "Erreur : impossible de vérifier les utilisations "
-                "de cette identité."
+                "Erreur : cette personne est encore référencée "
+                "dans un ou plusieurs jurys."
             )
-            return False
 
-        if nb_usages > 0:
-            print(f"Erreur : cette identité est encore utilisée par {nb_usages} élément(s).")
-
-            entities = self.find_entities_by_identity(id_identity)
-            if entities:
-                print("\nEntité(s) utilisant cette identité :")
-                for entity in entities:
-                    print(f"- ID : {entity['id_entity']} | Nom : {entity['name']}")
-
-            juries = self.find_juries_by_identity(id_identity)
-            if juries:
-                print("\nJury(s) utilisant cette identité :")
-                for jury in juries:
-                    print(f"- ID : {jury['id_jury']}")
+            for jury in juries:
+                print(
+                    f"- Jury {jury.id_jury} : "
+                    f"{jury.date_begin} -> {jury.date_end}"
+                )
 
             return False
 
+        # 2. Vérifie si une entité liée est présente dans une élection
+        elections = self.dao.find_elections_by_identity(id_identity)
+
+        if elections:
+            print(
+                "Erreur : une entité liée à cette personne "
+                "est présente dans une ou plusieurs élections."
+            )
+
+            for election in elections:
+                print(
+                    f"- Entité {election['id_entity']} : "
+                    f"{election['name']} "
+                    f"(élection {election['fk_id_election']})"
+                )
+
+            return False
+
+        # 3. Suppression
         return self.dao.delete(id_identity)
 
     def count_usages(self, id_identity: int) -> int:

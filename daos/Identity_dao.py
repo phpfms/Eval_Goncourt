@@ -179,25 +179,39 @@ class IdentityDao(Dao[Identity]):
             return False
 
     def delete(self, id_identity: int) -> bool:
-        """
-        Supprime une identité de la BDD.
-        """
+        """Supprime une identité et ses relations Identity / Entity."""
+
         try:
             with Dao.connection.cursor() as cursor:
-                sql = """
+
+                # Supprime les relations avec les entités
+                cursor.execute(
+                    """
+                    DELETE FROM identity_entity
+                    WHERE fk_id_identity = %s
+                    """,
+                    (id_identity,)
+                )
+
+                # Supprime l'identité
+                cursor.execute(
+                    """
                     DELETE FROM identity
                     WHERE id_identity = %s
-                """
+                    """,
+                    (id_identity,)
+                )
 
-                cursor.execute(sql, (id_identity,))
+                deleted = cursor.rowcount > 0
 
-                Dao.connection.commit()
-
-            return cursor.rowcount > 0
+            Dao.connection.commit()
+            return deleted
 
         except Exception as error:
             Dao.connection.rollback()
-            print(f"Erreur lors de la suppression de l'identité : {error}")
+            print(
+                f"Erreur lors de la suppression de l'identité : {error}"
+            )
             return False
 
     def count_usages_identity(self, id_identity: int) -> int:
@@ -497,4 +511,34 @@ class IdentityDao(Dao[Identity]):
                 return cursor.fetchall()
         except Exception as error:
             print(f"Erreur lors de la recherche des jurys liés à l'identité : {error}")
+            return []
+
+    def find_elections_by_identity(self, id_identity: int) -> list:
+        """Retourne les entités liées à une identité et présentes dans une élection."""
+
+        try:
+            with Dao.connection.cursor() as cursor:
+                sql = """
+                    SELECT DISTINCT
+                        e.id_entity,
+                        e.name,
+                        e.first_name,
+                        ee.fk_id_election
+                    FROM identity_entity ie
+                    INNER JOIN entity e
+                        ON e.id_entity = ie.fk_id_entity
+                    INNER JOIN entity_election ee
+                        ON ee.fk_id_entity = e.id_entity
+                    WHERE ie.fk_id_identity = %s
+                    ORDER BY e.id_entity, ee.fk_id_election
+                """
+
+                cursor.execute(sql, (id_identity,))
+                return cursor.fetchall()
+
+        except Exception as error:
+            print(
+                "Erreur lors de la recherche des élections "
+                f"de l'identité : {error}"
+            )
             return []
