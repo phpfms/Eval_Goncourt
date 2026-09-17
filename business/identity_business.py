@@ -137,10 +137,20 @@ class IdentityBusiness:
             return False
 
         if nb_usages > 0:
-            print(
-                "Erreur : cette identité est encore utilisée par "
-                f"{nb_usages} entité(s)."
-            )
+            print(f"Erreur : cette identité est encore utilisée par {nb_usages} élément(s).")
+
+            entities = self.find_entities_by_identity(id_identity)
+            if entities:
+                print("\nEntité(s) utilisant cette identité :")
+                for entity in entities:
+                    print(f"- ID : {entity['id_entity']} | Nom : {entity['name']}")
+
+            juries = self.find_juries_by_identity(id_identity)
+            if juries:
+                print("\nJury(s) utilisant cette identité :")
+                for jury in juries:
+                    print(f"- ID : {jury['id_jury']}")
+
             return False
 
         return self.dao.delete(id_identity)
@@ -254,3 +264,9 @@ class IdentityBusiness:
             id_entity,
             id_role
         )
+
+    def find_entities_by_identity(self, id_identity: int) -> list:
+        return self.dao.find_entities_by_identity(id_identity)
+
+    def find_juries_by_identity(self, id_identity: int) -> list:
+        return self.dao.find_juries_by_identity(id_identity)

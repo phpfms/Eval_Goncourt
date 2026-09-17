@@ -224,9 +224,7 @@ class IdentityDao(Dao[Identity]):
                     """,
                     (id_identity, id_identity)
                 )
-
                 return cursor.fetchone()["nb_utilisations"]
-
         except Exception as error:
             print(f"Erreur lors du comptage des utilisations de l'identité : {error}")
             return -1
@@ -354,14 +352,19 @@ class IdentityDao(Dao[Identity]):
             with Dao.connection.cursor() as cursor:
                 cursor.execute(
                     """
-                    INSERT INTO identity_role
+                    INSERT INTO identity_entity
                     (
+                        fk_id_entity,
                         fk_id_identity,
                         fk_id_role
                     )
-                    VALUES (%s, %s)
+                    VALUES (%s, %s, %s)
                     """,
-                    (id_identity, id_role)
+                    (
+                        None,
+                        id_identity,
+                        id_role
+                    )
                 )
 
             Dao.connection.commit()
@@ -379,16 +382,17 @@ class IdentityDao(Dao[Identity]):
             with Dao.connection.cursor() as cursor:
                 cursor.execute(
                     """
-                    SELECT i.id_identity,
+                    SELECT DISTINCT
+                           i.id_identity,
                            i.appelation,
                            i.under_appelation,
                            i.description,
                            i.address,
                            i.fk_id_identity_mother
                     FROM identity i
-                    INNER JOIN identity_role ir
-                        ON ir.fk_id_identity = i.id_identity
-                    WHERE ir.fk_id_role = %s
+                    INNER JOIN identity_entity ie
+                        ON ie.fk_id_identity = i.id_identity
+                    WHERE ie.fk_id_role = %s
                     ORDER BY i.appelation
                     """,
                     (id_role,)
@@ -406,6 +410,7 @@ class IdentityDao(Dao[Identity]):
                     record["address"],
                     record["fk_id_identity_mother"]
                 )
+
                 identity.id_identity = record["id_identity"]
                 identities.append(identity)
 
@@ -455,3 +460,41 @@ class IdentityDao(Dao[Identity]):
                 f"{error}"
             )
             return False
+
+    def find_entities_by_identity(self, id_identity: int) -> list:
+        """Retourne les entités utilisant cette identité."""
+        try:
+            with Dao.connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT e.*
+                    FROM entity e
+                    INNER JOIN identity_entity ie
+                        ON ie.fk_id_entity = e.id_entity
+                    WHERE ie.fk_id_identity = %s
+                    """,
+                    (id_identity,)
+                )
+                return cursor.fetchall()
+        except Exception as error:
+            print(f"Erreur lors de la recherche des entités liées à l'identité : {error}")
+            return []
+
+    def find_juries_by_identity(self, id_identity: int) -> list:
+        """Retourne les jurys utilisant cette identité."""
+        try:
+            with Dao.connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT j.*
+                    FROM jury j
+                    INNER JOIN identity_jury ij
+                        ON ij.fk_id_jury = j.id_jury
+                    WHERE ij.fk_id_identity = %s
+                    """,
+                    (id_identity,)
+                )
+                return cursor.fetchall()
+        except Exception as error:
+            print(f"Erreur lors de la recherche des jurys liés à l'identité : {error}")
+            return []

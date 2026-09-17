@@ -14,6 +14,8 @@ from displays.entity_display import DisplayEntity
 from displays.identity_display import DisplayIdentity
 from business.role_business import RoleBusiness
 from daos.role_dao import RoleDao
+from business.identity_entity_business import IdentityEntityBusiness
+from daos.identity_entity_dao import IdentityEntityDao
 
 
 
@@ -27,7 +29,8 @@ class Application:
         self.menu = Menu()
         self.identity_business = IdentityBusiness( IdentityDao() )
         self.identity_display = DisplayIdentity()
-        self.entity_business = EntityBusiness(EntityDao())
+        self.identity_entity_business = IdentityEntityBusiness( IdentityEntityDao() )
+        self.entity_business = EntityBusiness( EntityDao(), self.identity_entity_business )
         self.entity_display = DisplayEntity()
         self.role_business = RoleBusiness(RoleDao())
 
@@ -650,35 +653,41 @@ class Application:
                     else:
                         print("Aucun rôle disponible.")
 
+
             elif choix == "6":
+
                 try:
-                    id_identity = int( input("Identifiant de l'identité à modifier : ") )
+
+                    id_identity = int(input("Identifiant de l'identité à modifier : "))
                     identity = self.identity_business.read(id_identity)
                     if identity is None:
                         print("Identité introuvable.")
-
-                    print("\n===== MODIFIER UNE IDENTITÉ =====")
-                    print("Laissez vide pour conserver la valeur actuelle.")
-
-                    appelation = input( f"Appellation [{identity.appelation}] : " )
-                    under_appelation = input( f"Sous-appellation [{identity.under_appelation}] : ")
-
-                    description = input( f"Description [{identity.description}] : " )
-                    address = input( f"Adresse [{identity.address}] : " )
-
-                    if appelation != "":
-                        identity.appelation = appelation
-                    if under_appelation != "":
-                        identity.under_appelation = under_appelation
-                    if description != "":
-                        identity.description = description
-                    if address != "":
-                        identity.address = address
-
-                    if self.identity_business.update(identity):
-                        print("Identité modifiée avec succès.")
                     else:
-                        print("La modification a échoué.")
+                        print("\n===== MODIFIER UNE IDENTITÉ =====")
+                        print("Laissez vide pour conserver la valeur actuelle.")
+                        appelation = input(f"Appellation [{identity.appelation}] : ")
+                        under_appelation = input(f"Sous-appellation [{identity.under_appelation}] : ")
+                        description = input(f"Description [{identity.description}] : ")
+                        address = input(f"Adresse [{identity.address}] : ")
+
+                        if appelation != "":
+                            identity.appelation = appelation
+
+                        if under_appelation != "":
+                            identity.under_appelation = under_appelation
+
+                        if description != "":
+                            identity.description = description
+
+                        if address != "":
+                            identity.address = address
+
+                        if self.identity_business.update(identity):
+                            print("Identité modifiée avec succès.")
+
+                        else:
+                            print("La modification a échoué.")
+
                 except ValueError:
                     print("L'identifiant doit être un nombre.")
 

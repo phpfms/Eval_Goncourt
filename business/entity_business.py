@@ -13,6 +13,8 @@ et délègue les opérations SQL au EntityDao.
 
 from dataclasses import dataclass
 from typing import Optional
+from business.identity_entity_business import IdentityEntityBusiness
+from business.identity_entity_business import IdentityEntityBusiness
 
 from models.entity import Entity
 from daos.entity_dao import EntityDao
@@ -25,6 +27,7 @@ class EntityBusiness:
     """Classe métier permettant de gérer les entités."""
 
     dao: EntityDao
+    identity_entity_business: IdentityEntityBusiness
 
     def create(self, entity: Entity) -> int:
         """Crée une entité."""
@@ -96,7 +99,7 @@ class EntityBusiness:
         return self.dao.update(entity)
 
     def delete(self, id_entity: int) -> bool:
-        """Supprime une entité si elle n'est pas encore utilisée."""
+        """Supprime une entité et ses relations Identity / Entity."""
 
         if id_entity is None or id_entity <= 0:
             print("Erreur : identifiant invalide.")
@@ -109,13 +112,28 @@ class EntityBusiness:
         nb_usages = self.dao.count_usages_entity(id_entity)
 
         if nb_usages < 0:
-            print("Erreur : impossible de vérifier les utilisations de cette entité.")
+            print(
+                "Erreur : impossible de vérifier "
+                "les utilisations de cette entité."
+            )
             return False
 
         if nb_usages > 0:
-            print(f"Erreur : cette entité est encore utilisée par {nb_usages} élément(s).")
+            print(
+                f"Erreur : cette entité est encore utilisée "
+                f"par {nb_usages} élément(s)."
+            )
             return False
 
+        # Supprime les relations avec les identités
+        if not self.identity_entity_business.delete_by_entity(id_entity):
+            print(
+                "Erreur : impossible de supprimer les relations "
+                "Identity / Entity."
+            )
+            return False
+
+        # Supprime ensuite l'entité
         return self.dao.delete(id_entity)
 
     def count_usages(self, id_entity: int) -> int:

@@ -207,32 +207,20 @@ class EntityDao(Dao[Entity]):
             return False
 
     def count_usages_entity(self, id_entity: int) -> int:
-        """Compte les utilisations de l'entité dans les tables de liaison."""
-
+        """Compte les élections utilisant l'entité."""
         try:
             with Dao.connection.cursor() as cursor:
                 cursor.execute(
                     """
-                    SELECT
-                        (
-                            SELECT COUNT(*)
-                            FROM identity_entity
-                            WHERE fk_id_entity = %s
-                        )
-                        +
-                        (
-                            SELECT COUNT(*)
-                            FROM entity_election
-                            WHERE fk_id_entity = %s
-                        )
+                    SELECT COUNT(*) AS nb_utilisations
+                    FROM entity_election
+                    WHERE fk_id_entity = %s
                     """,
-                    (id_entity, id_entity, id_entity)
+                    (id_entity,)
                 )
-
                 return cursor.fetchone()["nb_utilisations"]
-
         except Exception as error:
-            print(f"Erreur lors du comptage des utilisations de l'entité : {error}")
+            print(f"Erreur lors du comptage des élections de l'entité : {error}")
             return -1
 
     def exists(
