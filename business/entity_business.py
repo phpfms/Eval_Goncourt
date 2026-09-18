@@ -319,3 +319,12 @@ class EntityBusiness:
             return False
 
         return True
+
+    def find_identities_by_entity(self, id_entity: int) -> list[tuple[int, int]]:
+        # Règle métier : un livre valide possède un identifiant strictement positif.
+        if id_entity is None or id_entity <= 0:
+            return []
+
+        # Choix technique : EntityBusiness passe par IdentityEntityBusiness
+        # au lieu d'accéder directement à IdentityEntityDao.
+        return self.identity_entity_business.find_identities_by_entity(id_entity)

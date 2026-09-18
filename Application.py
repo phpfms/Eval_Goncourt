@@ -193,34 +193,59 @@ class Application:
                 entities = self.entity_business.read_all()
                 self.entity_display.display_entities(entities)
 
+
             elif choix == "2":
                 try:
                     id_entity = int(input("Identifiant du livre : "))
                     entity = self.entity_business.read(id_entity)
                     if entity is not None:
-                        self.entity_display.display_entity(entity)
+                        relations = self.entity_business.find_identities_by_entity(entity.id_entity)
+                        identities = []
+                        for id_identity, id_role in relations:
+                            identity = self.identity_business.read(id_identity)
+                            role = self.role_business.read(id_role)
+                            if identity is not None and role is not None:
+                                identities.append((identity, role))
+                        self.entity_display.display_entity(entity, identities)
                     else:
                         print("Livre introuvable.")
                 except ValueError:
                     print("L'identifiant doit être un nombre.")
+
 
             elif choix == "3":
                 try:
                     id_entity = int(input("Identifiant du livre : "))
                     entity = self.entity_business.read(id_entity)
                     if entity is not None:
-                        self.entity_display.display_entity(entity)
+                        relations = self.entity_business.find_identities_by_entity(entity.id_entity)
+                        identities = []
+                        for id_identity, id_role in relations:
+                            identity = self.identity_business.read(id_identity)
+                            role = self.role_business.read(id_role)
+                            if identity is not None and role is not None:
+                                identities.append((identity, role))
+                        self.entity_display.display_entity(entity, identities)
+
                     else:
                         print("Livre introuvable.")
                 except ValueError:
                     print("L'identifiant doit être un nombre.")
+
 
             elif choix == "4":
                 name = input("Nom du livre : ")
                 entities = self.entity_business.find_by_name(name)
                 if entities:
                     for entity in entities:
-                        self.entity_display.display_entity(entity)
+                        relations = self.entity_business.find_identities_by_entity(entity.id_entity)
+                        identities = []
+                        for id_identity, id_role in relations:
+                            identity = self.identity_business.read(id_identity)
+                            role = self.role_business.read(id_role)
+                            if identity is not None and role is not None:
+                                identities.append((identity, role))
+                        self.entity_display.display_entity(entity, identities)
                 else:
                     print("Aucun livre trouvé.")
 
@@ -230,7 +255,8 @@ class Application:
                 price = input("Prix : ")
                 name = input("Nom (obligatoire): ")
                 first_name = input("Prénom : ")
-                # Pour l'instant les rôles servent également à représenter les types d'entités.
+                # Règle métier actuelle du projet : les rôles servent également
+                # à représenter les types d'entités lors de la création d'un livre.
                 roles = self.role_business.read_all()
                 print("\n===== TYPE DU LIVRE =====")
                 for role in roles:
@@ -244,7 +270,8 @@ class Application:
                 if role_selected is None:
                     print("Erreur : le type choisi n'existe pas.")
                 else:
-                    entity = Entity(ISBN, price, name, first_name if first_name else None, role_selected.name_role, resume if resume else None, creation_date, nb, unit_nb, None)
+                    entity = Entity(ISBN, price, name, first_name if first_name else None, role_selected.name_role,
+                                    resume if resume else None, creation_date, nb, unit_nb, None)
                     id_entity = self.entity_business.create(entity)
                     if id_entity != 0:
                         print(f"Livre créé avec l'identifiant {id_entity}.")
@@ -338,8 +365,8 @@ class Application:
                                     for identity in identities:
                                         print(f"{identity.id_identity} - {identity.appelation}")
                                     id_identity = int(input("Identifiant de la personne : "))
-                                    # La vérification de l'existence et de la possession du rôle
-                                    # est maintenant effectuée par IdentityBusiness.add_entity().
+                                    # La vérification de l'existence et du rôle est déléguée
+                                    # à IdentityBusiness.add_entity().
                                     if self.identity_business.add_entity(id_identity, id_entity, id_role):
                                         print("Intervenant ajouté au livre avec succès.")
                                     else:
