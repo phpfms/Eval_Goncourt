@@ -97,65 +97,90 @@ class JuryBusiness:
         """Retourne tous les jurys."""
         return self.dao.read_all()
 
+    def update(
+            self,
+            id_jury: int,
+            date_begin,
+            date_end,
+            fk_id_identity_president: int | None,
+            nb_entity: int,
+            nb_entity_mode: str
+    ) -> bool:
+        """Modifie les informations d'un jury en respectant les règles métier."""
 
-    def update(self, jury: Jury) -> bool:
-        """Modifie un jury."""
-
-        if jury is None:
-            print("Erreur : aucun jury fourni.")
-            return False
-
-        if jury.id_jury is None or jury.id_jury <= 0:
+        # Règle technique : un jury existant doit avoir un identifiant valide.
+        if id_jury is None or id_jury <= 0:
             print("Erreur : identifiant de jury invalide.")
             return False
 
-        if self.dao.read(jury.id_jury) is None:
+        # Règle métier : on ne peut modifier qu'un jury existant.
+        jury = self.read(id_jury)
+        if jury is None:
             print("Erreur : ce jury n'existe pas.")
             return False
 
-        if not self.validate_jury(jury):
+        # Règle métier : la période du jury doit être cohérente.
+        if date_begin is None or date_end is None:
+            print("Erreur : les dates du jury sont obligatoires.")
             return False
 
-        if jury.fk_id_identity_president is not None:
-            president = self.identity_business.read(
-                jury.fk_id_identity_president
-            )
+        if date_begin >= date_end:
+            print("Erreur : la date de début doit être antérieure à la date de fin.")
+            return False
 
-            if president is None:
+        # Règle métier : le nombre demandé doit être strictement positif.
+        if nb_entity <= 0:
+            print("Erreur : le nombre de membres doit être supérieur à 0.")
+            return False
+
+        # Règle métier : seules ces trois interprétations sont autorisées.
+        if nb_entity_mode not in ("MIN", "MAX", "EXACT"):
+            print("Erreur : le mode doit être MIN, MAX ou EXACT.")
+            return False
+
+        # Règle métier : si un président est indiqué, il doit exister.
+        if fk_id_identity_president is not None:
+            if self.identity_business.read(fk_id_identity_president) is None:
                 print("Erreur : le président n'existe pas.")
                 return False
 
-        nb_members = self.dao.count_members(jury.id_jury)
+        # Le nombre actuel de membres doit respecter la nouvelle règle.
+        # Cette vérification est faite dans Business et non dans DAO car
+        # elle correspond à une règle métier et nécessite de connaître la composition du jury.
+        nb_members = self.dao.count_members(id_jury)
 
         if nb_members < 0:
-            print("Erreur : impossible de compter les membres.")
+            print("Erreur : impossible de compter les membres du jury.")
             return False
 
-        if jury.nb_entity_mode == "MIN":
-            if nb_members < jury.nb_entity:
-                print(
-                    "Erreur : le nombre actuel de membres est inférieur "
-                    "au minimum demandé."
-                )
+        # MIN signifie que le jury doit avoir AU MOINS nb_entity membres.
+        if nb_entity_mode == "MIN":
+            if nb_members < nb_entity:
+                print("Erreur : le nombre actuel de membres est inférieur au minimum demandé.")
                 return False
 
-        elif jury.nb_entity_mode == "MAX":
-            if nb_members > jury.nb_entity:
-                print(
-                    "Erreur : le nombre actuel de membres dépasse "
-                    "le maximum demandé."
-                )
+        # MAX signifie que le jury doit avoir AU PLUS nb_entity membres.
+        if nb_entity_mode == "MAX":
+            if nb_members > nb_entity:
+                print("Erreur : le nombre actuel de membres dépasse le maximum demandé.")
                 return False
 
-        elif jury.nb_entity_mode == "EXACT":
-            if nb_members != jury.nb_entity:
-                print(
-                    "Erreur : le nombre de membres doit être exactement "
-                    f"{jury.nb_entity}."
-                )
+        # EXACT signifie que le jury doit avoir EXACTEMENT nb_entity membres.
+        if nb_entity_mode == "EXACT":
+            if nb_members != nb_entity:
+                print(f"Erreur : le jury doit avoir exactement {nb_entity} membre(s).")
                 return False
+
+        # Toutes les règles métier sont respectées.
+        # On met ensuite à jour l'objet Model avant de le transmettre au DAO.
+        jury.date_begin = date_begin
+        jury.date_end = date_end
+        jury.fk_id_identity_president = fk_id_identity_president
+        jury.nb_entity = nb_entity
+        jury.nb_entity_mode = nb_entity_mode
 
         return self.dao.update(jury)
+
 
     def delete(self, id_jury: int) -> bool:
         """Supprime un jury s'il n'est lié à aucune élection."""
@@ -435,39 +460,3 @@ class JuryBusiness:
             return []
         return self.dao.find_by_president_name(name.strip())
 
-    def update(
-            self,
-            id_jury: int,
-            date_begin,
-            date_end,
-            fk_id_identity_president: int | None,
-            nb_entity: int,
-            nb_entity_mode: str
-    ) -> bool:
-        """Modifie les informations d'un jury."""
-        if id_jury is None or id_jury <= 0:
-            print("Erreur : identifiant de jury invalide.")
-            return False
-        jury = self.read(id_jury)
-        if jury is None:
-            print("Erreur : ce jury n'existe pas.")
-            return False
-        if date_begin > date_end:
-            print("Erreur : la date de début doit être antérieure à la date de fin.")
-            return False
-        if nb_entity <= 0:
-            print("Erreur : le nombre de membres doit être positif.")
-            return False
-        if nb_entity_mode not in ("MIN", "MAX", "EXACT"):
-            print("Erreur : mode invalide.")
-            return False
-        if fk_id_identity_president is not None:
-            if self.identity_business.read(fk_id_identity_president) is None:
-                print("Erreur : le président n'existe pas.")
-                return False
-        jury.date_begin = date_begin
-        jury.date_end = date_end
-        jury.fk_id_identity_president = fk_id_identity_president
-        jury.nb_entity = nb_entity
-        jury.nb_entity_mode = nb_entity_mode
-        return self.dao.update(jury)

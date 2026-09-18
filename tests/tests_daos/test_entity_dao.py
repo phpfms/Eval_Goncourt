@@ -1,59 +1,125 @@
 # -*- coding: utf-8 -*-
 
 """
-Tests du DAO EntityDao.
-
-Ces tests utilisent les données présentes dans
-la dernière version de la base eval1_goncourt.
+Tests du DAO IdentityDao.
 """
 
-from daos.entity_dao import EntityDao
+from daos.identity_dao import IdentityDao
+from models.identity import Identity
 
 
-def test_read_entity_existante():
-    """L'entité 1 correspond au livre Minotaure."""
-    dao = EntityDao()
-    entity = dao.read(1)
-    assert entity is not None
-    assert entity.id_entity == 1
-    assert entity.name == "Minotaure"
-    assert entity.type == "livre"
+def test_read_identity_existante():
+    """L'identité 3 correspond à Didier Decoin."""
+    dao = IdentityDao()
+
+    identity = dao.read(3)
+
+    assert identity is not None
+    assert identity.id_identity == 3
+    assert identity.appelation == "Decoin"
+    assert identity.under_appelation == "Didier"
 
 
-def test_read_entity_inexistante():
-    """Un identifiant qui n'existe pas doit retourner None."""
-    dao = EntityDao()
-    entity = dao.read(-999999)
-    assert entity is None
+def test_read_identity_inexistante():
+    """Un identifiant inexistant doit retourner None."""
+    dao = IdentityDao()
+
+    identity = dao.read(-999999)
+
+    assert identity is None
 
 
-def test_read_all_entities():
-    """La dernière base contient actuellement 52 entités."""
-    dao = EntityDao()
-    entities = dao.read_all()
-    assert isinstance(entities, list)
-    assert len(entities) == 52
+def test_read_all_identities():
+    """read_all doit retourner une liste d'identités."""
+    dao = IdentityDao()
+
+    identities = dao.read_all()
+
+    assert isinstance(identities, list)
+    assert len(identities) > 0
+    assert all(
+        identity.id_identity is not None
+        for identity in identities
+    )
 
 
-def test_find_entity_par_nom():
-    """La recherche doit trouver l'entité Minotaure."""
-    dao = EntityDao()
-    entities = dao.find_by_name("Minotaure")
-    assert isinstance(entities, list)
-    assert len(entities) >= 1
-    assert any(entity.id_entity == 1 for entity in entities)
+def test_find_identity_par_nom():
+    """La recherche doit trouver Decoin."""
+    dao = IdentityDao()
+
+    identities = dao.find_by_name("Decoin")
+
+    assert isinstance(identities, list)
+    assert len(identities) >= 1
+    assert any(
+        identity.id_identity == 3
+        for identity in identities
+    )
 
 
-def test_find_entity_inexistante():
-    """Une recherche avec un nom inexistant doit retourner une liste vide."""
-    dao = EntityDao()
-    entities = dao.find_by_name("__ENTITE_INEXISTANTE_TEST__")
-    assert entities == []
+def test_find_identity_inexistante():
+    """Une recherche inexistante doit retourner une liste vide."""
+    dao = IdentityDao()
+
+    identities = dao.find_by_name(
+        "__IDENTITE_INEXISTANTE_TEST__"
+    )
+
+    assert identities == []
 
 
-def test_count_usages_entity():
-    """Le comptage des utilisations d'une entité doit retourner un entier."""
-    dao = EntityDao()
-    result = dao.count_usages_entity(1)
-    assert isinstance(result, int)
-    assert result >= 0
+def test_create_update_delete_identity():
+    """
+    Teste le cycle complet create -> read -> update -> delete.
+    """
+    dao = IdentityDao()
+
+    identity = Identity(
+        appelation="__TEST_IDENTITY_DAO__",
+        under_appelation="Test",
+        description="Identité créée uniquement pour les tests.",
+        address="Adresse de test",
+        fk_id_identity_mother=None
+    )
+
+    created_id = dao.create(identity)
+
+    assert created_id > 0
+    assert identity.id_identity == created_id
+
+    try:
+        created = dao.read(created_id)
+
+        assert created is not None
+        assert created.id_identity == created_id
+        assert created.appelation == "__TEST_IDENTITY_DAO__"
+        assert created.under_appelation == "Test"
+
+        identity.appelation = "__TEST_IDENTITY_DAO_UPDATED__"
+        identity.address = "Nouvelle adresse"
+
+        updated = dao.update(identity)
+
+        assert updated is True
+
+        modified = dao.read(created_id)
+
+        assert modified is not None
+        assert modified.appelation == "__TEST_IDENTITY_DAO_UPDATED__"
+        assert modified.address == "Nouvelle adresse"
+
+    finally:
+        deleted = dao.delete(created_id)
+
+        assert deleted is True
+
+    assert dao.read(created_id) is None
+
+
+def test_delete_identity_inexistante():
+    """Supprimer une identité inexistante doit échouer."""
+    dao = IdentityDao()
+
+    result = dao.delete(-999999)
+
+    assert result is False

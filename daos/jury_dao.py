@@ -9,16 +9,22 @@ from models.jury import Jury
 
 @dataclass
 class JuryDao(Dao[Jury]):
+    """DAO permettant de gérer les jurys en base de données."""
 
     def create(self, jury: Jury) -> int:
-        """Crée un jury."""
+        """Crée un jury et retourne son identifiant."""
+
+        # Les seules valeurs autorisées par les règles métier sont MIN, MAX et EXACT.
+        # Cette vérification évite d'envoyer une valeur invalide à MySQL.
+        if jury.nb_entity_mode not in ("MIN", "MAX", "EXACT"):
+            print(f"Erreur lors de la création du jury : mode invalide ({jury.nb_entity_mode}).")
+            return 0
 
         try:
             with Dao.connection.cursor() as cursor:
                 cursor.execute(
                     """
-                    INSERT INTO jury
-                    (
+                    INSERT INTO jury (
                         date_begin,
                         date_end,
                         fk_id_identity_president,
@@ -37,7 +43,6 @@ class JuryDao(Dao[Jury]):
                         jury.fk_id_jury_mother
                     )
                 )
-
                 id_jury = cursor.lastrowid
 
             Dao.connection.commit()
@@ -50,8 +55,9 @@ class JuryDao(Dao[Jury]):
             return 0
 
     def read(self, *id_jury: int) -> Optional[Jury]:
-        """Recherche un jury."""
+        """Recherche un jury à partir de son identifiant."""
 
+        # Le DAO attend exactement un identifiant.
         if len(id_jury) != 1:
             return None
 
@@ -72,7 +78,6 @@ class JuryDao(Dao[Jury]):
                     """,
                     (id_jury[0],)
                 )
-
                 record = cursor.fetchone()
 
             if record is None:
@@ -112,7 +117,6 @@ class JuryDao(Dao[Jury]):
                     ORDER BY id_jury
                     """
                 )
-
                 records = cursor.fetchall()
 
             juries = []
@@ -136,7 +140,19 @@ class JuryDao(Dao[Jury]):
             return []
 
     def update(self, jury: Jury) -> bool:
-        """Modifie un jury."""
+        """Modifie un jury existant."""
+
+        # Le DAO protège également la base contre une valeur invalide.
+        # Le Business applique déjà cette règle, mais le DAO doit rester robuste
+        # car il peut être appelé directement par les tests ou par un autre code.
+        if jury.nb_entity_mode not in ("MIN", "MAX", "EXACT"):
+            print(f"Erreur lors de la modification du jury : mode invalide ({jury.nb_entity_mode}).")
+            return False
+
+        # Un jury doit posséder un identifiant pour pouvoir être modifié.
+        if jury.id_jury is None or jury.id_jury <= 0:
+            print("Erreur lors de la modification du jury : identifiant invalide.")
+            return False
 
         try:
             with Dao.connection.cursor() as cursor:
@@ -162,7 +178,6 @@ class JuryDao(Dao[Jury]):
                         jury.id_jury
                     )
                 )
-
                 updated = cursor.rowcount > 0
 
             Dao.connection.commit()
@@ -176,6 +191,10 @@ class JuryDao(Dao[Jury]):
     def delete(self, id_jury: int) -> bool:
         """Supprime un jury."""
 
+        # Un identifiant invalide ne doit pas provoquer de requête SQL.
+        if id_jury is None or id_jury <= 0:
+            return False
+
         try:
             with Dao.connection.cursor() as cursor:
                 cursor.execute(
@@ -185,7 +204,6 @@ class JuryDao(Dao[Jury]):
                     """,
                     (id_jury,)
                 )
-
                 deleted = cursor.rowcount > 0
 
             Dao.connection.commit()
@@ -197,7 +215,7 @@ class JuryDao(Dao[Jury]):
             return False
 
     def count_members(self, id_jury: int) -> int:
-        """Compte les membres d'un jury."""
+        """Compte les membres associés à un jury."""
 
         try:
             with Dao.connection.cursor() as cursor:
@@ -209,7 +227,6 @@ class JuryDao(Dao[Jury]):
                     """,
                     (id_jury,)
                 )
-
                 record = cursor.fetchone()
 
             return record["nb"] if record else 0
@@ -219,7 +236,8 @@ class JuryDao(Dao[Jury]):
             return -1
 
     def find_by_president_name(self, name: str) -> list[Jury]:
-        """Retourne les jurys correspondant au nom du président."""
+        """Retourne les jurys correspondant au nom de leur président."""
+
         try:
             with Dao.connection.cursor() as cursor:
                 cursor.execute(
@@ -243,6 +261,7 @@ class JuryDao(Dao[Jury]):
                 records = cursor.fetchall()
 
             juries = []
+
             for record in records:
                 jury = Jury(
                     record["date_begin"],
@@ -258,13 +277,12 @@ class JuryDao(Dao[Jury]):
             return juries
 
         except Exception as error:
-            print(
-                f"Erreur lors de la recherche des jurys par président : {error}"
-            )
+            print(f"Erreur lors de la recherche des jurys par président : {error}")
             return []
 
     def count_elections(self, id_jury: int) -> int:
-        """Compte les élections liées à un jury."""
+        """Compte les élections associées à un jury."""
+
         try:
             with Dao.connection.cursor() as cursor:
                 cursor.execute(
@@ -276,41 +294,9 @@ class JuryDao(Dao[Jury]):
                     (id_jury,)
                 )
                 record = cursor.fetchone()
-            return record["total"] if record else 0
-        except Exception as error:
-            print(
-                f"Erreur lors du comptage des élections du jury : {error}"
-            )
-            return -1
 
-    def update(self, jury) -> bool:
-        """Modifie un jury en base."""
-        try:
-            with Dao.connection.cursor() as cursor:
-                cursor.execute(
-                    """
-                    UPDATE jury
-                    SET date_begin = %s,
-                        date_end = %s,
-                        fk_id_identity_president = %s,
-                        nb_entity = %s,
-                        nb_entity_mode = %s
-                    WHERE id_jury = %s
-                    """,
-                    (
-                        jury.date_begin,
-                        jury.date_end,
-                        jury.fk_id_identity_president,
-                        jury.nb_entity,
-                        jury.nb_entity_mode,
-                        jury.id_jury
-                    )
-                )
-            Dao.connection.commit()
-            return True
+            return record["total"] if record else 0
+
         except Exception as error:
-            Dao.connection.rollback()
-            print(
-                f"Erreur lors de la modification du jury : {error}"
-            )
-            return False
+            print(f"Erreur lors du comptage des élections du jury : {error}")
+            return -1

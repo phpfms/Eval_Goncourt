@@ -119,6 +119,7 @@ class Application:
                 if self.jury_business.delete(id_jury):
                     print("Jury supprimé avec succès.")
             elif choix == "0":
+                print("Retour au menu principal.")
                 conti = False
             else:
                 print("Choix invalide.")

@@ -208,7 +208,8 @@ class IdentityJuryDao(Dao):
                     """,
                     (id_jury,)
                 )
-                return cursor.fetchall()
+                records = cursor.fetchall()
+                return list(records)
         except Exception as error:
             print(
                 f"Erreur lors de la recherche des membres : {error}"
